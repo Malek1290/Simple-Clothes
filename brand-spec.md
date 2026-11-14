@@ -104,3 +104,11 @@ Plus the two storefront contexts already in the repo
 Egyptian Arabic, first person ("ببني، بصمّم"), short declaratives, prices always
 explicit, no exclamation-mark salesmanship. The site sells craft and clarity,
 which is what a fashion label wants from the person building its store.
+
+## MW Lab extension — November 2026
+- Design read: preserve / editorial fashion / monochrome. Dials: variance 4, motion 8 (opt-in only), density 4, assets 8, brand fidelity 10.
+- Narrative: a playful intermission after the main content, phone/laptop viewing, ample space around a Python-style code window.
+- Rounded cards: 24px; buttons: 12px. Existing paper/ink palette and Arabic typography retained.
+- Fast visual typing (~2s), slow 39-second DOM/SVG sequence; never starts without Start.
+- Text bubbles, not recorded speech. No Python is executed. Escape, Skip, tab-accessible controls and reduced-motion static narrative.
+- Source imported from Drive Simple-Clothes-main; provenance in scripts/drive-import.json. Cloudflare transport scripts removed.

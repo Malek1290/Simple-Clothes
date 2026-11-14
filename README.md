@@ -32,7 +32,7 @@ python3 build.py
 
 `build.py` بينادي `render.py` الأول، اللي بيعمل خطوتين على القالب:
 
-1. بيحقن مسارات اللوجو المترسّمة (`/tmp/trace/paths.json`) والفافيكون.
+1. بيحقن مسارات اللوجو المترسّمة (`assets/brand/paths.json`) والفافيكون.
 2. بيبني روابط واتساب مسبقًا **لكل عنصر فيه `data-wa`** — الرسالة بتتكتب مرة
    واحدة في `render.py` وبتتطابق مع نسخة `app.js`.
 
@@ -181,3 +181,14 @@ npx vercel --prod
 - الأيقونات SVG sprite داخلي — مفيش أي أيقون فونت خارجي.
 - الخطوط `font-display: swap` مع `preload` للخطين الأساسيين.
 - بدون JS: المحتوى ظاهر بالكامل وشاشة التحميل مخفية والواتساب شغّال.
+
+## MW Lab
+The page was imported from the supplied Google Drive version; see `scripts/drive-import.json`. Edit `src/index.tpl.html`, `src/styles.css`, and `src/app.js`, then run `python3 build.py`. Traced logo paths now live in the repository so builds need no temporary files.
+
+Start is the only trigger for the visual Python typing and the 39-second black/white stick-figure story. No Python evaluation, external video, or audio. Skip / Escape and background-tab cancellation restore the page; reduced-motion users get a static text narrative. Prices retain ascending RTL/DOM order on all viewports.
+
+Logic/markup checks (not browser visual QA):
+```sh
+npm install --prefix /tmp/mw-tests jsdom@26 html-validate@9 postcss@8
+NODE_PATH=/tmp/mw-tests/node_modules node scripts/test-experiment.cjs
+```

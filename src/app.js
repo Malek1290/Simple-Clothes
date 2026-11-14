@@ -1,3 +1,4 @@
+
 /* ==========================================================================
    MW — MALEK FOR WEBSITE
    Loader choreography · reveals · counters · WhatsApp deep links
@@ -22,7 +23,7 @@
     var p = PLANS[key];
     if (!p) return '';
     return [
-      'السلام عليكم مالك 👋',
+      'السلام عليكم مالك ',
       'أنا مهتم بـ ' + p.name + ' بسعر ' + p.price + '.',
       '',
       'تفاصيل الباقة اللي شوفتها على الموقع:',
@@ -33,11 +34,11 @@
   }
 
   function generalMessage() {
-    return 'السلام عليكم مالك 👋\nشفت موقع Malek for Website وحابب أتكلم معاك عن مشروع متجر إلكتروني.';
+    return 'السلام عليكم مالك \nشفت موقع Malek for Website وحابب أتكلم معاك عن مشروع متجر إلكتروني.';
   }
 
   function adviceMessage() {
-    return 'السلام عليكم مالك 👋\nشفت الباقات على الموقع ومحتاج ترشيح — مشروعي عبارة عن:';
+    return 'السلام عليكم مالك \nشفت الباقات على الموقع ومحتاج ترشيح — مشروعي عبارة عن:';
   }
 
   function waUrl(text) {
@@ -235,7 +236,7 @@
       var note = (document.getElementById('f-note').value || '').trim();
 
       var lines = [
-        'السلام عليكم مالك 👋',
+        'السلام عليكم مالك ',
         'اسمي: ' + (name || '—'),
         'الباقة المهتم بها: ' + plan
       ];
@@ -249,4 +250,77 @@
       }
     });
   }
+})();
+
+
+/* MW Lab: fast visual typing, slow user-initiated DOM theatre. No Python eval. */
+(function () {
+  'use strict';
+  var start = document.getElementById('experimentStart');
+  var overlay = document.getElementById('lightStory');
+  var code = document.getElementById('experimentCode');
+  if (!start || !overlay || !code) return;
+  var caption = document.getElementById('storyCaption');
+  var status = document.getElementById('experimentStatus');
+  var chapter = document.getElementById('storyChapter');
+  var initial = code.textContent;
+  var source = '# MW LAB — experiment.py\nfrom imagination import Light, Website\n\nsite = Website(theme="black")\nvisitor = Light(shape="stick_figure", face=None)\n\nvisitor.say("Why fight affordable prices?")\nvisitor.escape(border="white")\nsite.notice(visitor)\nsite.bring_back(visitor)\n\nvisitor.say("Until we meet again, visitor.")\nsite.seal()';
+  var timers = [], running = false, previousFocus, inertNodes = [];
+  function later(fn, delay) { timers.push(window.setTimeout(fn, delay)); }
+  function reset() {
+    timers.forEach(window.clearTimeout); timers = [];
+    overlay.hidden = true; overlay.removeAttribute('data-scene');
+    document.body.classList.remove('story-playing');
+    inertNodes.forEach(function (entry) { entry[0].inert = entry[1]; }); inertNodes = [];
+    caption.textContent = ''; code.textContent = initial;
+    start.disabled = false; start.removeAttribute('aria-busy');
+    status.textContent = 'جاهز. نجرّب تاني؟'; running = false;
+    if (previousFocus) previousFocus.focus({ preventScroll: true });
+  }
+  function scene(name, text, label) {
+    overlay.dataset.scene = name; caption.textContent = text || ''; chapter.textContent = label;
+  }
+  function play() {
+    overlay.hidden = false; overlay.setAttribute('role','dialog');
+    overlay.setAttribute('aria-modal','true'); overlay.setAttribute('aria-label','حكاية النور وسواد الموقع');
+    document.body.classList.add('story-playing');
+    Array.from(document.body.children).forEach(function (node) {
+      if (node !== overlay && !node.contains(overlay) && node.tagName !== 'SCRIPT') { inertNodes.push([node,node.inert]); node.inert = true; }
+    });
+    // The overlay is a sibling inside main; isolate the rest without inerting its ancestor.
+    Array.from(document.querySelector('main').children).forEach(function (node) {
+      if (node !== overlay && !node.contains(overlay)) { inertNodes.push([node,node.inert]); node.inert = true; }
+    });
+    document.getElementById('storySkip').focus({ preventScroll: true });
+    scene('glow','','01 / A LITTLE LIGHT');
+    later(function () { scene('emerge','','02 / OUT OF THE BORDER'); }, 200);
+    later(function () { scene('speak','الناس بتحاربني علي اسعاري الرخيصه ليه؟','03 / THE QUESTION'); }, 6500);
+    later(function () { scene('escape','','04 / THE ESCAPE'); }, 12500);
+    later(function () { scene('capture','الموقع لاحظ… مفيش خروج من الإطار.','05 / THE WEBSITE ANSWERS'); }, 19000);
+    later(function () { scene('farewell','شكلنا هنتقابل تاني يا زائر','06 / UNTIL NEXT TIME'); }, 26000);
+    later(function () { scene('seal','','07 / BACK TO THE CODE'); }, 32500);
+    later(reset, 39000);
+  }
+  start.addEventListener('click', function () {
+    if (running) return;
+    running = true; previousFocus = start; start.disabled = true; start.setAttribute('aria-busy','true');
+    status.textContent = 'بيكتب…'; code.textContent = '';
+    var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (reduced) {
+      code.textContent = source;
+      status.textContent = 'الناس بتحاربني علي اسعاري الرخيصه ليه؟ — الموقع يرجّع الشخصية للإطار — شكلنا هنتقابل تاني يا زائر';
+      start.disabled = false; start.removeAttribute('aria-busy'); running = false; return;
+    }
+    // ~2 seconds of typing; the theatre itself lasts 39 seconds.
+    var index = 0;
+    function type() {
+      index = Math.min(index + 6, source.length); code.textContent = source.slice(0,index);
+      if (index < source.length) later(type, 28);
+      else { status.textContent = 'اكتمل الكود. النور بيصحى…'; later(play,500); }
+    }
+    type();
+  });
+  document.getElementById('storySkip').addEventListener('click',reset);
+  document.addEventListener('keydown',function (event) { if (running && event.key === 'Escape') reset(); });
+  document.addEventListener('visibilitychange',function () { if (document.hidden && running) reset(); });
 })();
