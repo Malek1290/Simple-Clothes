@@ -2207,14 +2207,20 @@ body.story-playing main { filter: none; transform: none; }
   function character(x,y,scale,alpha,climb){
     var phase=(state.step%1),swing=Math.sin(phase*Math.PI*2)*climb;
     ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.globalAlpha=alpha;
-    // Minimal opaque figure, no bloom: articulated elbows/knees and planted feet.
-    var lean=state.escape*.16;ctx.rotate(lean);
-    ctx.fillStyle='#f7f5f1';ctx.beginPath();ctx.ellipse(0,-73,10,12,-state.look*.12,0,Math.PI*2);ctx.fill();
-    line([0,-58,2,-29],7);
-    line([1,-51,-17,-39-swing*6,-25,-27-swing*13-state.escape*30],5);
-    line([1,-51,18,-49+swing*4,26,-62+swing*10-state.escape*18],5);
-    line([2,-29,-13,-15+swing*10,-22,0],5);
-    line([2,-29,16,-15-swing*8,25,-Math.max(0,swing*13)],5);
+    // Solid pictogram proportions from assets/character/reference.png, column one.
+    // Round head, tapered filled torso and thick rounded limbs; no face or glow.
+    var lean=state.escape*.12;ctx.rotate(lean);
+    ctx.fillStyle='#f7f5f1';
+    ctx.beginPath();ctx.arc(0,-72,8.5,0,Math.PI*2);ctx.fill();
+    // Keep the small reference gap between the head and shoulders.
+    ctx.beginPath();ctx.moveTo(-7,-59);ctx.quadraticCurveTo(0,-63,7,-59);
+    ctx.lineTo(9,-35);ctx.quadraticCurveTo(0,-30,-9,-35);ctx.closePath();ctx.fill();
+    // Arms retain the soft, substantial silhouette of the supplied character.
+    line([-7,-55,-13,-44-swing*5,-17,-34-swing*10-state.escape*27],8);
+    line([7,-55,14,-48+swing*5,18,-39+swing*10-state.escape*36],8);
+    // Straight pictogram legs articulate at the knees while climbing.
+    line([-4,-35,-9,-18+swing*7,-15,0],9);
+    line([4,-35,9,-18-swing*7,15,-Math.max(0,swing*10)],9);
     ctx.restore();
   }
   function draw(){
@@ -2245,8 +2251,8 @@ body.story-playing main { filter: none; transform: none; }
       ctx.save();ctx.globalAlpha=state.peek;
       line([px-38,py+17,px+43,py+12],1,.35);
       ctx.beginPath();ctx.rect(px-48,py-45,100,60);ctx.clip();
-      ctx.fillStyle='#f7f5f1';ctx.beginPath();ctx.ellipse(px+4,py+4+(1-state.peek)*28,10,13,-.2,0,Math.PI*2);ctx.fill();
-      line([px-27,py+14,px-27,py+8,px-21,py+9,px-19,py+14],5);
+      ctx.fillStyle='#f7f5f1';ctx.beginPath();ctx.arc(px+4,py+4+(1-state.peek)*28,8.5,0,Math.PI*2);ctx.fill();
+      line([px-27,py+14,px-27,py+8,px-21,py+9,px-19,py+14],7);
       ctx.restore();
     }
     canvas.style.opacity=state.fade;

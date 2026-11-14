@@ -132,3 +132,9 @@ which is what a fashion label wants from the person building its store.
 - Black expands from viewport edges and visible page features, becomes fully opaque, then reveals only a head/hand fragment.
 - Updated exact farewell: «هشوفك تاني يا زائر». Total runtime ~54.7 seconds; typing remains 1.8 seconds.
 - Uses existing anime.js 4.2.2 with Canvas compositing. No claim of a Rive-authored asset.
+
+## Character identity — supplied pictogram sheet
+- Source: `assets/character/reference.png` (user attachment `Untitled.png`).
+- Select the solid white, unoutlined first-column figure; the gray sheet background is not part of the character.
+- Circular head, faceless, small head/torso gap, solid tapered trunk and thick rounded limbs.
+- Production code-line climbing rig and final blackout peek share these proportions. Story and controls remain unchanged.
