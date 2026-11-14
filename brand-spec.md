@@ -125,3 +125,10 @@ which is what a fashion label wants from the person building its store.
 - Larger faceless figure, clear climb above the luminous boundary, broad shadow sheets rather than crossing ropes.
 - Fast 1.8-second typing; slow scene, ~47 seconds total including typing. Same brand, Arabic dialogue and opt-in-only interaction.
 - Post-render Canvas updates use native anime.js onRender; five responsive browser cases re-run.
+
+## Motion v4 — code-native climbing and site-wide blackout
+- No duplicate portal or replacement code box. Character positions come from actual code-line DOM bounds.
+- Restrained white silhouette, hairline step emphasis, no particles or bloom. Inspired by the supplied minimalistic-graphics skill; not its MP4 output.
+- Black expands from viewport edges and visible page features, becomes fully opaque, then reveals only a head/hand fragment.
+- Updated exact farewell: «هشوفك تاني يا زائر». Total runtime ~54.7 seconds; typing remains 1.8 seconds.
+- Uses existing anime.js 4.2.2 with Canvas compositing. No claim of a Rive-authored asset.

@@ -1247,3 +1247,14 @@ button:disabled { cursor: wait; }
 @media(prefers-reduced-motion:reduce) { .code-cursor { animation: none; } }
 .brand__mark, .hero__stamp, .hero__card, .field__wrap { border-radius: 14px; }
 .case__hero { width: 100%; height: auto; display: block; }
+/* The real code block is the only stage. Keep every climbed line measurable. */
+.story-code-row { display: block; min-height: 1.9em; }
+.story-code-line { display: inline-block; max-width: 100%; white-space: pre-wrap; overflow-wrap: anywhere; }
+.code-window--playing { border-color: #f7f5f1a0; }
+.code-window--playing .code-cursor { visibility: hidden; }
+.light-story { background: transparent; }
+body.story-playing main { filter: none; transform: none; }
+@media(max-width:700px) {
+ .code-window__code { font-size: 10px; line-height: 1.9; }
+ .light-story__caption { bottom: max(22px,env(safe-area-inset-bottom)); }
+}
