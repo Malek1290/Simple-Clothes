@@ -185,17 +185,20 @@ npx vercel --prod
 ## MW Lab
 The page was imported from the supplied Google Drive version; see `scripts/drive-import.json`. Edit `src/index.tpl.html`, `src/styles.css`, and `src/app.js`, then run `python3 build.py`. Traced logo paths now live in the repository so builds need no temporary files.
 
-Start is the only trigger for the visual Python typing and the 44-second black/white stick-figure story. No Python evaluation, external video, or audio. Skip / Escape and background-tab cancellation restore the page; reduced-motion users get a static text narrative. Prices retain ascending RTL/DOM order on all viewports.
+Start is the only trigger for the visual Python typing and the 55-second black/white stick-figure story. No Python evaluation, external video, or audio. Skip / Escape and background-tab cancellation restore the page; reduced-motion users get a static text narrative. Prices retain ascending RTL/DOM order on all viewports.
 
-### Animation v3 — anime.js + Canvas
-The previous animation engine has been removed. `assets/vendor/anime.umd.min.js` (anime.js 4.2.2, MIT) is vendored and inlined by the build, with no CDN requirement. Its native `createTimeline`, `add`, `call`, `animate`, and cancellation APIs drive code typing, articulated figure poses, particles, border light, page dimming, advancing shadow sheets and the final closure.
+### Animation v4 — the original code window, not a second stage
 
-Typing takes 1.8 seconds; the full sequence takes about 47 seconds including typing. The figure is larger than before and visibly climbs above the code border. Broad shadows replace the crossing black ropes. Rendering happens in anime.js `onRender` after object values are updated; responsive layout, opt-in playback, Skip/Escape, replay, focus restoration, hidden-tab cancellation and reduced motion are preserved.
+The production page now uses the actual `#codeWindow` as its only stage. After 1.8-second visual typing, the real code is split into measurable spans. A small faceless white character climbs non-empty code lines using their DOM bounds, then attempts to cross the original top edge. The viewport canvas is transparent and does not draw another code frame or portal.
 
-Canvas device pixel ratio is capped at 2 and particle count drops on phones. Real Chromium checks cover 320×740, 390×844, 768×1024, 1440×900 and 844×390. Results: `scripts/responsive-results.json`. Tests seek timeline stages; not an FPS benchmark.
+Black growth originates from all screen edges and visible page elements. At ~40 seconds it becomes fully opaque black, then a small head/hand fragment appears and the exact farewell is **هشوفك تاني يا زائر**. The sequence resets at ~54.7 seconds. Start-only activation, Skip, Escape, focus/inert restoration, resize measurement, hidden-tab cancellation and reduced-motion text are preserved.
+
+The supplied minimalistic-graphics skill informed thin strokes, a restrained monochrome palette and stepwise climbing. Its MP4 workflow was intentionally not used because this must remain a live website interaction. This remains native anime.js/Canvas/DOM animation, not an authored Rive asset. The previous `motion-study.html` is a separate historical direction study, not the production player.
+
+Browser checks cover 320×740, 390×844, 768×1024, 1440×900 and 844×390. Checks include opaque black Canvas samples before the final peek, no duplicate portal, dialogue/reset, replay, Skip, Escape, reduced motion, price order, no overflow and no JavaScript errors. Results: `scripts/responsive-results.json`. These are functional/layout checks, not an FPS benchmark.
 
 ```sh
 npm install --prefix /tmp/mw-tests playwright-core @sparticuz/chromium html-validate@9 postcss@8
-# A Chromium runtime and its system libraries are required.
+# A Chromium runtime and its system libraries are required. Serve repo on :8080.
 NODE_PATH=/tmp/mw-tests/node_modules node scripts/test-experiment.cjs
 ```

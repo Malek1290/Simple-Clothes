@@ -253,191 +253,152 @@
 })();
 
 
-/* MW Lab v3 — anime.js 4.2.2 timeline + resolution-aware Canvas theatre. */
+/* MW Lab v4 — original code box is the stage. No portal or duplicate frame. */
 (function () {
   'use strict';
-  var start = document.getElementById('experimentStart');
-  var overlay = document.getElementById('lightStory');
-  var canvas = document.getElementById('storyCanvas');
-  if (!start || !overlay || !canvas) return;
-  var code = document.getElementById('experimentCode');
-  var status = document.getElementById('experimentStatus');
-  var caption = document.getElementById('storyCaption');
-  var chapter = document.getElementById('storyChapter');
-  var skip = document.getElementById('storySkip');
-  var main = document.querySelector('main');
-  var initial = code.textContent;
-  var source = '# MW LAB / 001 — light_vs_dark.py\nfrom imagination import Light, Website\n\nsite = Website(theme="black")\nlight = Light(face=None, price=700)\n\nlight.wake()\nlight.cross_border()\nlight.ask("Why fight affordable prices?")\n\nsite.notice(light)\nsite.pull_back(light)\nlight.say("Until we meet again, visitor.")\nsite.seal()';
-  var timeline, captionAnimation, originalMainStyle, ctx, state, origin, running = false, frozen = [], savedFocus;
-  var width = 1, height = 1, reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-  var particles = Array.from({length: 64}, function (_,i) {
-    return {angle: i * 2.39996, radius: 0.25 + (i % 11)/14, speed: 0.3+(i%7)/9, size: .7+(i%3)*.65};
-  });
-  // Local joint coordinates, blended continuously by anime.js — not a rigid icon.
-  var poses = {
-    sleep: [0,-38, 0,-12, -14,1,-20,19, 14,1,20,19, -9,28,-20,43, 12,29,25,42],
-    stand: [0,-72, 0,-34, -17,-18,-27,0, 19,-16,29,1, -12,28,-19,56, 14,28,23,56],
-    look: [6,-74, 0,-34, -19,-19,-32,-4, 22,-43,36,-58, -12,28,-20,56, 14,28,23,56],
-    climb: [8,-76, 0,-34, -28,-55,-40,-79, 24,-61,34,-91, -26,14,-39,31, 18,27,32,50],
-    resist: [15,-64, 6,-28, -24,-35,-48,-47, 34,-47,56,-68, -19,22,-42,39, 24,32,44,52],
-    wave: [-5,-72, 0,-34, -17,-18,-27,0, 21,-57,24,-88, -12,28,-19,56, 14,28,23,56]
-  };
-  function jointObject(pose) { var o={}; pose.forEach(function(v,i){o['j'+i]=v;}); return o; }
-  function fit() {
-    width = window.innerWidth; height = window.innerHeight;
-    var ratio = Math.min(window.devicePixelRatio || 1,2);
-    canvas.width = Math.round(width*ratio); canvas.height = Math.round(height*ratio);
-    if (ctx) ctx.setTransform(ratio,0,0,ratio,0,0);
-    if (running && state && !overlay.hidden) draw();
+  var start=document.getElementById('experimentStart'),overlay=document.getElementById('lightStory');
+  if(!start||!overlay)return;
+  var canvas=document.getElementById('storyCanvas'),code=document.getElementById('experimentCode');
+  var box=document.getElementById('codeWindow'),pre=code.closest('pre'),caption=document.getElementById('storyCaption');
+  var chapter=document.getElementById('storyChapter'),skip=document.getElementById('storySkip');
+  var status=document.getElementById('experimentStatus'),initial=code.textContent;
+  var reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  var source='# light_vs_dark.py\nfrom mw import Website, Light\n\nsite = Website(theme="black")\nlight = Light(face=None)\n\nlight.wake()\nlight.find_footing(code.lines)\nlight.climb(code.lines)\n\nlight.ask("Why fight low prices?")\nlight.try_to_escape()\nsite.notice(light)\nsite.cover_with_black()\nlight.say("See you again, visitor.")';
+  var timeline,ctx,state,anchors=[],seeds=[],inert=[],running=false,captionFx;
+  var width=1,height=1,dpr=1,focusBefore,originalBoxClass;
+  function fit(){
+    width=innerWidth;height=innerHeight;dpr=Math.min(devicePixelRatio||1,2);
+    canvas.width=Math.round(width*dpr);canvas.height=Math.round(height*dpr);
+    if(ctx)ctx.setTransform(dpr,0,0,dpr,0,0);
+    measure();if(running&&!overlay.hidden)draw();
   }
-  function portalRect() {
-    var targetW=Math.min(width*.80,680), targetH=Math.min(height*.43,350);
-    return {x:origin.x+(width/2-origin.x)*state.expand,
-      y:origin.y+(height*.48-origin.y)*state.expand,
-      w:origin.w+(targetW-origin.w)*state.expand,
-      h:origin.h+(targetH-origin.h)*state.expand};
-  }
-  function line(points, color, lineWidth) {
-    ctx.beginPath();ctx.moveTo(points[0],points[1]);
-    for(var i=2;i<points.length;i+=2) ctx.lineTo(points[i],points[i+1]);
-    ctx.strokeStyle=color;ctx.lineWidth=lineWidth;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
-  }
-  function draw() {
-    if (!ctx || !state || !origin) return;
-    canvas.style.opacity = state.fade;
-    main.style.transform = 'scale('+state.pageScale+') translateX('+state.pageX+'px)';
-    main.style.filter = 'brightness('+state.brightness+')';
-    ctx.clearRect(0,0,width,height);
-    var p=portalRect(), time=timeline ? timeline.currentTime/1000:0;
-    ctx.fillStyle='rgba(7,7,7,'+state.dim+')';ctx.fillRect(0,0,width,height);
-    // Light leaks from the original code border before it fills the viewport.
-    var halo=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,Math.max(width,height)*.7);
-    halo.addColorStop(0,'rgba(247,245,241,'+(state.glow*.22)+')');halo.addColorStop(1,'rgba(247,245,241,0)');
-    ctx.fillStyle=halo;ctx.fillRect(0,0,width,height);
-    ctx.save();ctx.translate(p.x,p.y);ctx.scale(1,Math.max(.001,state.seal));
-    // Nested rounded portal, fine tracing line, and a spatial floor beneath it.
-    ctx.shadowColor='#f7f5f1';ctx.shadowBlur=22*state.glow;
-    ctx.fillStyle='rgba(13,13,13,.92)';ctx.strokeStyle='rgba(247,245,241,'+state.glow+')';ctx.lineWidth=1.4;
-    ctx.beginPath();ctx.roundRect(-p.w/2,-p.h/2,p.w,p.h,22);ctx.fill();ctx.stroke();
-    ctx.shadowBlur=0;ctx.globalAlpha=state.glow*.25;
-    ctx.beginPath();ctx.roundRect(-p.w/2+9,-p.h/2+9,p.w-18,p.h-18,16);ctx.stroke();ctx.globalAlpha=1;
-    for(var g=1;g<6;g++) line([-p.w/2+15,p.h/2-g*11,p.w/2-15,p.h/2-g*11],'rgba(247,245,241,'+(state.glow*.04)+')',1);
-    ctx.restore();
-    // Border particles follow deterministic orbital paths; count stays small on phones.
-    ctx.save();ctx.globalAlpha=state.glow*state.seal;
-    particles.slice(0,width<600?36:64).forEach(function(d){
-      var a=d.angle+time*.12*d.speed;
-      var x=p.x+Math.cos(a)*p.w*.58*d.radius;
-      var y=p.y+Math.sin(a)*p.h*.78*d.radius-time*d.speed%25;
-      ctx.fillStyle='#f7f5f1';ctx.globalAlpha=state.glow*(.15+.5*Math.abs(Math.sin(a)));
-      ctx.beginPath();ctx.arc(x,y,d.size,0,Math.PI*2);ctx.fill();
-    });ctx.restore();
-    // Figure: independently animated head/shoulder/elbow/wrist/hip/knee/ankle.
-    var unit=Math.min(width/330,height/570,1.8);
-    var x=width*state.x,y=height*state.y;
-    ctx.save();ctx.translate(x,y);ctx.rotate(state.lean);ctx.scale(unit*state.scale,unit*state.scale);
-    ctx.globalAlpha=state.actor;ctx.shadowColor='#fff';ctx.shadowBlur=12*state.glow;
-    ctx.fillStyle='#f7f5f1';ctx.beginPath();ctx.ellipse(state.j0,state.j1,12,14,state.lean*.3,0,Math.PI*2);ctx.fill();
-    var c='#f7f5f1',thick=6;
-    line([state.j0,state.j1+17,state.j2,state.j3,0,5],c,thick);
-    line([state.j2,state.j3,state.j4,state.j5,state.j6,state.j7],c,thick);
-    line([state.j2,state.j3,state.j8,state.j9,state.j10,state.j11],c,thick);
-    line([0,5,state.j12,state.j13,state.j14,state.j15],c,thick);
-    line([0,5,state.j16,state.j17,state.j18,state.j19],c,thick);
-    ctx.restore();
-    // Site shadows advance as broad tapered sheets, not oversized crossing ropes.
-    if (state.ink>0) {
-      ctx.save();
-      [-1,1].forEach(function(side){
-        var edge=side<0?-30:width+30;
-        var tip=edge+(x-edge)*state.ink;
-        var top=height*.12, bottom=height*.83;
-        ctx.fillStyle='#090909';ctx.beginPath();ctx.moveTo(edge,top);
-        ctx.bezierCurveTo(edge-side*70,height*.26,tip-side*60,y-45,tip,y+6);
-        ctx.bezierCurveTo(tip-side*35,y+65,edge-side*50,bottom,edge,bottom);ctx.closePath();ctx.fill();
-        ctx.strokeStyle='rgba(247,245,241,.13)';ctx.lineWidth=1;
-        ctx.beginPath();ctx.moveTo(edge,top+12);ctx.bezierCurveTo(edge-side*70,height*.26,tip-side*60,y-45,tip,y+6);ctx.stroke();
-      });ctx.restore();
-    }
-    // Iris closes inward like ink over the luminous border, never flashing.
-    if (state.close>0) {
-      ctx.fillStyle='#0d0d0d';
-      var slit=Math.max(0,1-state.close), slitW=p.w*slit,slitH=p.h*slit;
-      ctx.beginPath();ctx.rect(0,0,width,height);ctx.roundRect(p.x-slitW/2,p.y-slitH/2,slitW,slitH,Math.min(22,slitH/2));ctx.fill('evenodd');
-    }
-  }
-  function message(text,label) {
-    if (captionAnimation) captionAnimation.cancel();
-    caption.textContent=text; chapter.textContent=label;
-    captionAnimation = window.anime.animate(caption, {
-      opacity: [0,1], duration: 900, ease: 'outCubic'
+  function measure(){
+    var b=pre.getBoundingClientRect(),lines=Array.from(code.querySelectorAll('.story-code-line'));
+    anchors=[];
+    [13,12,10,8,6,4,3].forEach(function(index,i){
+      var line=lines[index];if(!line)return;
+      var r=line.getBoundingClientRect();
+      // Feet land on the visible text baseline; x alternates along its real width.
+      var x=r.left+Math.min(r.width-10,Math.max(28,r.width*(i%2?.62:.30)));
+      anchors.push({x:Math.max(b.left+28,Math.min(b.right-28,x)),y:r.bottom-3});
     });
   }
-  function restore() {
-    if (timeline) { timeline.cancel();timeline=null; }
-    if(captionAnimation) { captionAnimation.cancel();captionAnimation=null; }
-    if(originalMainStyle === null) main.removeAttribute('style');
-    else if(originalMainStyle !== undefined) main.setAttribute('style', originalMainStyle);
-    overlay.hidden=true; overlay.removeAttribute('data-scene'); document.body.classList.remove('story-playing');
-    frozen.forEach(function(v){v[0].inert=v[1];});frozen=[];
-    code.textContent=initial;caption.textContent='';start.disabled=false;start.removeAttribute('aria-busy');
-    status.textContent='جاهز. نجرّب تاني؟'; running=false;
-    if(ctx)ctx.clearRect(0,0,width,height);
-    if(savedFocus)savedFocus.focus({preventScroll:true});
+  function line(points,w,alpha){
+    ctx.beginPath();ctx.moveTo(points[0],points[1]);for(var i=2;i<points.length;i+=2)ctx.lineTo(points[i],points[i+1]);
+    ctx.lineWidth=w;ctx.strokeStyle='rgba(247,245,241,'+(alpha===undefined?1:alpha)+')';ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke();
   }
-  function launch() {
-    var bounds=document.getElementById('codeWindow').getBoundingClientRect();
-    origin={x:bounds.left+bounds.width/2,y:bounds.top+bounds.height/2,w:bounds.width,h:bounds.height};
-    ctx=canvas.getContext('2d');
-    if(!ctx){restore();status.textContent='المتصفح لا يدعم الرسم. باقي الموقع متاح.';return;}
-    overlay.hidden=false;overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','حكاية النور وسواد الموقع');
-    document.body.classList.add('story-playing');
-    Array.from(document.body.children).forEach(function(n){if(n!==overlay&&n.tagName!=='SCRIPT'){frozen.push([n,n.inert]);n.inert=true;}});
-    skip.focus({preventScroll:true});fit();
-    code.textContent=source;
-    status.textContent='اكتمل الكود. النور بيتحرّك…';
+  function location(){
+    if(!anchors.length)return{x:width*.5,y:height*.5};
+    var index=Math.min(anchors.length-1,Math.floor(state.step)),f=state.step-index;
+    var a=anchors[index],b=anchors[Math.min(index+1,anchors.length-1)];
+    var boxRect=box.getBoundingClientRect(),escapeX=boxRect.left+boxRect.width*.67;
+    return{x:(a.x+(b.x-a.x)*f)*(1-state.escape)+escapeX*state.escape,
+      y:(a.y+(b.y-a.y)*f-Math.sin(f*Math.PI)*14)*(1-state.escape)+(boxRect.top+30)*state.escape};
+  }
+  function character(x,y,scale,alpha,climb){
+    var phase=(state.step%1),swing=Math.sin(phase*Math.PI*2)*climb;
+    ctx.save();ctx.translate(x,y);ctx.scale(scale,scale);ctx.globalAlpha=alpha;
+    // Minimal opaque figure, no bloom: articulated elbows/knees and planted feet.
+    var lean=state.escape*.16;ctx.rotate(lean);
+    ctx.fillStyle='#f7f5f1';ctx.beginPath();ctx.ellipse(0,-73,10,12,-state.look*.12,0,Math.PI*2);ctx.fill();
+    line([0,-58,2,-29],7);
+    line([1,-51,-17,-39-swing*6,-25,-27-swing*13-state.escape*30],5);
+    line([1,-51,18,-49+swing*4,26,-62+swing*10-state.escape*18],5);
+    line([2,-29,-13,-15+swing*10,-22,0],5);
+    line([2,-29,16,-15-swing*8,25,-Math.max(0,swing*13)],5);
+    ctx.restore();
+  }
+  function draw(){
+    if(!ctx||!state)return;ctx.clearRect(0,0,width,height);
+    var p=location(),unit=Math.min(1.3,Math.max(.90,width/650)),b=pre.getBoundingClientRect();
+    // Drawing is clipped to the ORIGINAL pre until the character crosses its top.
+    ctx.save();
+    if(state.escape<.01){ctx.beginPath();ctx.rect(b.left,b.top,b.width,b.height);ctx.clip();}
+    if(anchors.length){
+      var i=Math.min(anchors.length-1,Math.floor(state.step)),a=anchors[i];
+      line([a.x-19,a.y+3,a.x+30,a.y+3],1,state.actor*.55);
+    }
+    character(p.x,p.y+(1-state.rise)*65,unit,state.actor,1-state.escape);
+    ctx.restore();
+    // Black comes from page features AND every edge. All paths end in full coverage.
+    if(state.dark>0){
+      ctx.fillStyle='#000';
+      seeds.forEach(function(seed,i){
+        var amount=Math.max(0,Math.min(1,(state.dark-(i%4)*.035)/.88));
+        var radius=amount*Math.hypot(width,height)*.85;
+        ctx.beginPath();ctx.ellipse(seed.x*width,seed.y*height,radius*(.75+(i%3)*.12),radius,seed.angle,0,Math.PI*2);ctx.fill();
+      });
+      if(state.dark>=.999)ctx.fillRect(0,0,width,height);
+    }
+    // After total blackout, only a tiny fragment reappears. No replacement box.
+    if(state.peek>0){
+      var px=width*.58,py=Math.min(height*.57,height-190);
+      ctx.save();ctx.globalAlpha=state.peek;
+      line([px-38,py+17,px+43,py+12],1,.35);
+      ctx.beginPath();ctx.rect(px-48,py-45,100,60);ctx.clip();
+      ctx.fillStyle='#f7f5f1';ctx.beginPath();ctx.ellipse(px+4,py+4+(1-state.peek)*28,10,13,-.2,0,Math.PI*2);ctx.fill();
+      line([px-27,py+14,px-27,py+8,px-21,py+9,px-19,py+14],5);
+      ctx.restore();
+    }
+    canvas.style.opacity=state.fade;
+  }
+  function message(text,label){
+    if(captionFx)captionFx.cancel();caption.textContent=text;chapter.textContent=label;
+    captionFx=anime.animate(caption,{opacity:[0,1],duration:800,ease:'outSine'});
+  }
+  function restore(){
+    if(timeline){timeline.cancel();timeline=null;}if(captionFx){captionFx.cancel();captionFx=null;}
+    overlay.hidden=true;overlay.removeAttribute('data-scene');document.body.classList.remove('story-playing');
+    inert.forEach(function(v){v[0].inert=v[1];});inert=[];
+    box.className=originalBoxClass||'code-window';code.textContent=initial;caption.textContent='';
+    start.disabled=false;start.removeAttribute('aria-busy');status.textContent='جاهز. نجرّب تاني؟';
+    running=false;if(ctx)ctx.clearRect(0,0,width,height);if(focusBefore)focusBefore.focus({preventScroll:true});
+  }
+  function launch(){
+    ctx=canvas.getContext('2d');if(!ctx){restore();return;}
+    code.textContent='';source.split('\n').forEach(function(text){
+      var row=document.createElement('span');row.className='story-code-row';
+      var span=document.createElement('span');span.className='story-code-line';span.textContent=text||' ';
+      row.appendChild(span);code.appendChild(row);
+    });
+    box.scrollIntoView({block:'center',behavior:'instant'});
+    overlay.hidden=false;overlay.setAttribute('role','dialog');overlay.setAttribute('aria-modal','true');overlay.setAttribute('aria-label','الشخصية تتسلّق الكود ثم يغطي السواد الموقع');
+    document.body.classList.add('story-playing');box.classList.add('code-window--playing');
+    Array.from(document.body.children).forEach(function(n){if(n!==overlay&&n.tagName!=='SCRIPT'){inert.push([n,n.inert]);n.inert=true;}});
+    seeds=[{x:0,y:0,angle:0},{x:1,y:0,angle:.4},{x:0,y:1,angle:.8},{x:1,y:1,angle:0},{x:.5,y:0,angle:.3},{x:.5,y:1,angle:.6},{x:0,y:.5,angle:0},{x:1,y:.5,angle:.6}];
+    document.querySelectorAll('.plan,.feature,.brand__mark,.wa-float').forEach(function(n){var r=n.getBoundingClientRect();if(r.bottom>0&&r.top<height)seeds.push({x:(r.left+r.width/2)/width,y:(r.top+r.height/2)/height,angle:.2});});
+    fit();skip.focus({preventScroll:true});status.textContent='الشخصية جوّه الكود…';
   }
   start.addEventListener('click',function(){
-    if(running)return;
-    if(!window.anime){status.textContent='تعذّر تحميل مكتبة الحركة. أعد تحميل الصفحة للمحاولة.';return;}
-    savedFocus=start;
-    if(reduced.matches){code.textContent=source;status.textContent='الناس بتحاربني علي اسعاري الرخيصه ليه؟ — النور يحاول الخروج، والموقع يعيده — شكلنا هنتقابل تاني يا زائر';return;}
-    originalMainStyle = main.getAttribute('style');
-    running=true;start.disabled=true;start.setAttribute('aria-busy','true');status.textContent='بيكتب…';
-    state=Object.assign({dim:0,expand:0,glow:0,actor:0,x:.5,y:.70,scale:.25,lean:0,ink:0,seal:1,close:0,
-      pageScale:1,pageX:0,brightness:1,fade:1},jointObject(poses.sleep));
-    canvas.style.opacity=1;
-    var typing={count:0};
-    timeline=window.anime.createTimeline({autoplay:false,defaults:{ease:'inOutSine'},
-      onRender:function(){if(!overlay.hidden)draw();},onComplete:restore});
+    if(running)return;if(!window.anime){status.textContent='تعذر تحميل مكتبة الحركة. أعد المحاولة.';return;}
+    if(reduced.matches){code.textContent=source;status.textContent='الشخصية تتسلق سطور الكود. السواد يغطي الصفحة، ثم تظهر وتقول: هشوفك تاني يا زائر';return;}
+    focusBefore=start;originalBoxClass=box.className;running=true;start.disabled=true;start.setAttribute('aria-busy','true');
+    box.scrollIntoView({block:'center',behavior:'instant'});
+    state={step:0,rise:0,actor:0,escape:0,look:0,dark:0,peek:0,fade:1};var typing={count:0};
+    timeline=anime.createTimeline({autoplay:false,defaults:{ease:'inOutSine'},onRender:function(){if(!overlay.hidden)draw();},onComplete:restore});
     timeline.add(typing,{count:source.length,duration:1800,ease:'linear',onUpdate:function(){code.textContent=source.slice(0,Math.floor(typing.count));}},0);
     timeline.call(launch,2200);
-    timeline.call(function(){message('','01 / A CRACK IN THE DARK');},2200);
-    timeline.add(state,{dim:.70,expand:1,glow:1,pageScale:.985,brightness:.6,duration:4300},2200);
-    // Anticipation, then a full-body rise and a head turn before speaking.
-    timeline.add(state,Object.assign({actor:1,scale:1,y:.57,duration:4800,ease:'outCubic'},jointObject(poses.stand)),5500);
-    timeline.add(state,Object.assign({lean:.04,duration:2200},jointObject(poses.look)),10300);
-    timeline.call(function(){message('الناس بتحاربني علي اسعاري الرخيصه ليه؟','02 / WHY FIGHT THE LIGHT?');overlay.dataset.scene='speak';},12000);
-    timeline.add(state,{y:.562,duration:1300,alternate:true,loop:3},12500);
-    timeline.call(function(){message('','03 / BEYOND THE BORDER');overlay.dataset.scene='escape';},18000);
-    timeline.add(state,Object.assign({x:.63,y:.30,lean:.12,scale:1.1,duration:6000,ease:'inOutCubic'},jointObject(poses.climb)),18000);
-    timeline.add(state,{pageX:-7,duration:1600,alternate:true,loop:1},22500);
-    timeline.call(function(){message('','04 / THE SITE PUSHES BACK');overlay.dataset.scene='capture';},24000);
-    timeline.add(state,{ink:1,dim:.88,duration:4200,ease:'inOutQuart'},24000);
-    timeline.add(state,Object.assign({lean:-.20,x:.59,y:.40,duration:3200},jointObject(poses.resist)),26500);
-    timeline.add(state,Object.assign({x:.5,y:.57,scale:.8,lean:0,duration:4700},jointObject(poses.stand)),29700);
-    timeline.add(state,{ink:0,duration:2600},32400);
-    timeline.call(function(){message('شكلنا هنتقابل تاني يا زائر','05 / NOT THE LAST GOODBYE');overlay.dataset.scene='farewell';},35000);
-    timeline.add(state,Object.assign({duration:1800},jointObject(poses.wave)),35000);
-    timeline.add(state,{j10:36,duration:850,alternate:true,loop:3},37000);
-    timeline.call(function(){message('','06 / BACK TO THE BEGINNING');overlay.dataset.scene='seal';},41000);
-    timeline.add(state,{close:1,actor:0,glow:0,duration:4300,ease:'inOutCubic'},41000);
-    timeline.add(state,{fade:0,pageScale:1,pageX:0,brightness:1,duration:2000},45300);
+    timeline.call(function(){overlay.dataset.scene='inside';message('','01 / INSIDE THE CODE');},2200);
+    timeline.add(state,{actor:1,rise:1,duration:3500,ease:'outCubic'},2500);
+    for(var i=0;i<6;i++)timeline.add(state,{step:i+1,duration:2200,ease:'inOutSine'},6000+i*2400);
+    timeline.call(function(){overlay.dataset.scene='speak';message('الناس بتحاربني علي اسعاري الرخيصه ليه؟','02 / ONE LAST LINE');},20500);
+    timeline.add(state,{look:1,duration:1600,alternate:true,loop:1},21000);
+    timeline.call(function(){overlay.dataset.scene='escape';message('','03 / ALMOST OUT');},26700);
+    timeline.add(state,{escape:1,duration:5000,ease:'inOutCubic'},26700);
+    timeline.call(function(){overlay.dataset.scene='capture';message('','04 / THE WHOLE SITE ANSWERS');},32300);
+    timeline.add(state,{dark:1,duration:7500,ease:'inOutCubic'},32300);
+    timeline.add(state,{actor:0,duration:1800},38000);
+    timeline.call(function(){overlay.dataset.scene='blackout';message('','');},40000);
+    timeline.add(state,{peek:1,duration:2500,ease:'outCubic'},41800);
+    timeline.call(function(){overlay.dataset.scene='farewell';message('هشوفك تاني يا زائر','05 / STILL HERE');},44500);
+    timeline.add(state,{peek:0,duration:2000},50000);
+    timeline.call(function(){overlay.dataset.scene='seal';message('','');},52000);
+    timeline.add(state,{fade:0,duration:2200},52500);
     timeline.play();
   });
   skip.addEventListener('click',restore);
   document.addEventListener('keydown',function(e){if(running&&e.key==='Escape')restore();if(running&&!overlay.hidden&&e.key==='Tab'){e.preventDefault();skip.focus();}});
   document.addEventListener('visibilitychange',function(){if(document.hidden&&running)restore();});
-  window.addEventListener('resize',fit,{passive:true});
-  if(reduced.addEventListener)reduced.addEventListener('change',function(e){if(e.matches&&running)restore();});
+  addEventListener('resize',fit,{passive:true});
+  reduced.addEventListener('change',function(e){if(e.matches&&running)restore();});
 })();
