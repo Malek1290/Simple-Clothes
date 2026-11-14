@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Build a single, dependency-free index.html from the editable src/ project.
 
-Run:  python3 build.py
+Run:  python3 build.py        (renders src/index.tpl.html first)
 
-It inlines styles.css, app.js, the woff2 fonts and the project screenshots as
-base64 data URIs. The output works offline — including inside sandboxed iframe
-previews that block all network requests.
+It inlines styles.css, app.js, the woff2 fonts and every screenshot as base64
+data URIs. The output works offline — including inside sandboxed iframe previews
+that block all network requests. The SVG monogram is inlined as real markup
+(not as an <img>), so it can be animated and recoloured with currentColor.
 """
 from __future__ import annotations
 
@@ -34,7 +35,14 @@ def asset_uri(relative: str) -> str:
     return data_uri(path)
 
 
+def render_source() -> None:
+    """Template -> src/index.html (logo paths, favicon, WhatsApp deep links)."""
+    import render
+    render.main()
+
+
 def main() -> None:
+    render_source()
     html = (SRC / "index.html").read_text(encoding="utf-8")
     css = (SRC / "styles.css").read_text(encoding="utf-8")
     js = (SRC / "app.js").read_text(encoding="utf-8")
@@ -80,7 +88,7 @@ def main() -> None:
 
     leftovers = [
         token
-        for token in ("styles.css", "app.js", "../assets/", "../fonts/")
+        for token in ('href="styles.css"', 'src="app.js"', "../assets/", "../fonts/")
         if token in html
     ]
     if leftovers:

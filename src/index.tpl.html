@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0D0D0D">
+  <meta name="description" content="Malek for Website — بصمّم وأبني متاجر إلكترونية لبراندات الأزياء. تصميم إديتوريال، سرعة، ودعم بعد التسليم. باقات تبدأ من 700 جنيه مصري مع قاعدة بيانات ودومين.">
+  <meta property="og:title" content="MW — Malek for Website | متاجر إلكترونية لبراندات الأزياء">
+  <meta property="og:description" content="أعمال حقيقية على الإنترنت، باقات من 700 جنيه، وقاعدة بيانات ودومين لكل مشروع.">
+  <meta property="og:image" content="https://malek1290.github.io/Simple-Clothes/assets/projects/s-cloth-3.webp">
+  <meta property="og:type" content="website">
+  <title>MW — Malek for Website | متاجر إلكترونية لبراندات الأزياء</title>
+  <link rel="icon" href="__FAVICON__">
+  <link rel="preload" href="../fonts/el-messiri-arabic-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../fonts/cairo-arabic-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="styles.css">
+  <script>
+    document.documentElement.classList.add('js');
+    /* Safety net: if app.js never runs, the curtain still lifts. */
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        if (document.documentElement.classList.contains('is-ready')) return;
+        document.documentElement.classList.add('is-ready');
+        var l = document.getElementById('loader');
+        if (l && l.parentNode) l.parentNode.removeChild(l);
+        document.body.classList.remove('is-locked');
+      }, 6000);
+    });
+  </script>
+</head>
+<body>
+  <a class="skip-link" href="#main">تخطَّ إلى المحتوى</a>
+
+  <!-- ============ LOADER — the mark assembles itself ============ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__stage">
+      <div class="loader__mosaic" aria-hidden="true">
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span>
+      </div>
+
+      <div class="loader__mark">
+        <span class="loader__cut" aria-hidden="true"></span>
+        <svg class="loader__svg" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+          <g fill="currentColor">
+            <path class="mk mk--w" d="__PATH_W__" />
+            <path class="mk mk--m" d="__PATH_M__" />
+            <path class="mk mk--t1" d="__PATH_T1__" />
+            <path class="mk mk--t2" d="__PATH_T2__" />
+          </g>
+        </svg>
+      </div>
+
+      <div class="loader__word" aria-hidden="true">
+        <span class="loader__lt">M</span><span class="loader__lt">A</span><span class="loader__lt">L</span><span class="loader__lt">E</span><span class="loader__lt">K</span>
+      </div>
+      <div class="loader__sub" aria-hidden="true">FOR WEBSITE</div>
+
+      <div class="loader__meta">
+        <span class="loader__count"><i id="loaderPct">00</i><em>%</em></span>
+        <span class="loader__rule"><i id="loaderFill"></i></span>
+        <span class="loader__tag">CAIRO · EG</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Inline icon library -->
+  <svg class="svg-sprite" aria-hidden="true" focusable="false" xmlns="http://www.w3.org/2000/svg">
+    <symbol id="i-whatsapp" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.16 8.16 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.25-8.24 2.2 0 4.27.86 5.83 2.42a8.2 8.2 0 0 1 2.41 5.83c0 4.54-3.7 8.21-8.24 8.21Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.25-.64.81-.79.98-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.48c-.16 0-.43.06-.66.31-.22.25-.86.85-.86 2.07s.89 2.4 1.01 2.56c.12.17 1.75 2.67 4.23 3.74.59.26 1.05.41 1.41.52.59.19 1.13.16 1.56.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.06-.1-.23-.16-.48-.28Z" fill="currentColor"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M19 12H5m6-6-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-up-left" viewBox="0 0 24 24"><path d="M18 18 6 6m0 0h10M6 6v10" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="m4.5 12.5 5 5 10-11" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-store" viewBox="0 0 24 24"><path d="M4 9.5V20h16V9.5M3 9.5 5.4 4h13.2L21 9.5M3 9.5a2.4 2.4 0 0 0 4.5 1.1A2.4 2.4 0 0 0 12 10.6a2.4 2.4 0 0 0 4.5 0A2.4 2.4 0 0 0 21 9.5M9.5 20v-5.5h5V20" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M5 6v6c0 1.66 3.13 3 7 3s7-1.34 7-3V6M5 12v6c0 1.66 3.13 3 7 3s7-1.34 7-3v-6" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3.5 9h17M3.5 15h17M12 3c2.5 2.5 3.8 5.5 3.8 9s-1.3 6.5-3.8 9c-2.5-2.5-3.8-5.5-3.8-9S9.5 5.5 12 3Z" fill="none" stroke="currentColor" stroke-width="1.4"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13.5 2 4 14h6l-1.5 8L19 10h-6l.5-8Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-pen" viewBox="0 0 24 24"><path d="m4 20 1-4.5L16 4.5a2.1 2.1 0 0 1 3 0l.5.5a2.1 2.1 0 0 1 0 3L8.5 19 4 20Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></symbol>
+    <symbol id="i-mobile" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M10.5 18.5h3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-headset" viewBox="0 0 24 24"><path d="M4 13v-1a8 8 0 0 1 16 0v1M4 13a2 2 0 0 0 2 2h1v-5H6a2 2 0 0 0-2 2Zm16 0a2 2 0 0 1-2 2h-1v-5h1a2 2 0 0 1 2 2Z" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M20 15v1a4 4 0 0 1-4 4h-3" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11.4 11.4 0 0 0 3.6.58 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.46.58 3.6a1 1 0 0 1-.25 1L6.6 10.8Z" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  </svg>
+
+  <!-- ============ HEADER ============ -->
+  <header class="site-header" id="top">
+    <div class="wrap bar">
+      <a class="brand" href="#top" aria-label="Malek for Website — الرئيسية">
+        <span class="brand__mark" aria-hidden="true">
+          <svg viewBox="0 0 60 60" fill="currentColor" class="brand__svg">
+            <path d="__PATH_W__" />
+            <path d="__PATH_M__" />
+            <path d="__PATH_T1__" />
+            <path d="__PATH_T2__" />
+          </svg>
+        </span>
+        <span class="brand__text">
+          <span class="brand__name">MALEK</span>
+          <span class="brand__sub">FOR WEBSITE</span>
+        </span>
+      </a>
+
+      <nav class="nav__links" aria-label="التنقل الرئيسي">
+        <a href="#work"><em>01</em> المشاريع</a>
+        <a href="#pricing"><em>02</em> الباقات</a>
+        <a href="#why"><em>03</em> الخدمة</a>
+        <a href="#contact"><em>04</em> تواصل</a>
+      </nav>
+
+      <div class="nav__right">
+        <a class="btn btn--paper btn--sm nav__cta" data-wa="general" target="_blank" rel="noopener" href="https://wa.me/201055247802">
+          <span class="btn__label">ابدأ مشروعك</span>
+          <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+        </a>
+        <button class="nav__toggle" type="button" aria-label="فتح القائمة" aria-expanded="false" aria-controls="mobile-menu">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+    <span class="scroll-progress" aria-hidden="true"><i id="scrollBar"></i></span>
+  </header>
+
+  <div class="mobile-menu" id="mobile-menu" inert>
+    <nav aria-label="قائمة الموبايل">
+      <a href="#work"><span>01</span>المشاريع</a>
+      <a href="#pricing"><span>02</span>الباقات</a>
+      <a href="#why"><span>03</span>الخدمة</a>
+      <a href="#contact"><span>04</span>تواصل معايا</a>
+    </nav>
+    <div class="mobile-menu__foot">
+      <a class="btn btn--paper btn--full" data-wa="general" target="_blank" rel="noopener" href="https://wa.me/201055247802">
+        <span class="btn__label">كلّمني على واتساب</span>
+        <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+      </a>
+      <a href="tel:+201055247802" class="mobile-menu__phone" dir="ltr">+20&nbsp;105&nbsp;524&nbsp;7802</a>
+      <span>القاهرة، مصر · بشتغل مع عملاء في كل مكان</span>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- ============ HERO — editorial cover ============ -->
+    <section class="hero">
+      <div class="wrap hero__grid">
+        <div class="hero__copy">
+          <span class="hero__eyebrow hero-in" data-i="0">
+            <i class="tick"></i> MASTER OF THE WEB · EST. 2026
+          </span>
+
+          <h1 class="hero__title">
+            <span class="line hero-in" data-i="1"><span class="hero__num" aria-hidden="true">01</span>متاجر إلكترونية</span>
+            <span class="line hero-in" data-i="2"><span class="hero__num" aria-hidden="true">02</span>لبراندات <em>الأزياء</em></span>
+            <span class="line hero-in" data-i="3"><span class="hero__num" aria-hidden="true">03</span>بتفاصيل إديتوريال</span>
+          </h1>
+
+          <p class="hero__lead hero-in" data-i="4">
+            أنا مالك. بصمّم وأبني متاجر إلكترونية كاملة لبراندات الملابس —
+            من أول صورة المنتج وواجهة المتجر، لحد لوحة التحكم وقاعدة البيانات.
+            مش قالب جاهز؛ تجربة شراء بتحس إنها من نفس البراند.
+          </p>
+
+          <div class="hero__actions hero-in" data-i="5">
+            <a class="btn btn--paper btn--lg" href="#pricing">
+              <span class="btn__label">شوف الباقات</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-arrow"></use></svg></span>
+            </a>
+            <a class="btn btn--line btn--lg" href="#work">
+              <span class="btn__label">الأعمال</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-up-left"></use></svg></span>
+            </a>
+          </div>
+
+          <dl class="hero__facts hero-in" data-i="6">
+            <div><dt>مشاريع لايف</dt><dd data-count="2">2</dd></div>
+            <div><dt>تبدأ من</dt><dd data-count="700" data-suffix=" ج.م">700 ج.م</dd></div>
+            <div><dt>أسرع دعم</dt><dd data-count="12" data-suffix=" ساعة">12 ساعة</dd></div>
+          </dl>
+        </div>
+
+        <div class="hero__media">
+          <figure class="hero__shot hero__shot--main">
+            <img src="../assets/live/cloth-star-girl.webp" alt="STAR GIRL SWEATPANTS من متجر CLOTHINA — لقطة منتج حقيقية" width="620" height="820" fetchpriority="high">
+            <figcaption>CLOTHINA · STAR GIRL SWEATPANTS</figcaption>
+          </figure>
+
+          <figure class="hero__shot hero__shot--side">
+            <img src="../assets/live/cloth-cozy-cardi.webp" alt="COZY CARDI من متجر CLOTHINA — لقطة منتج حقيقية" width="620" height="820" fetchpriority="high">
+          </figure>
+
+          <div class="hero__stamp" aria-hidden="true">
+            <svg viewBox="0 0 120 120" class="hero__stamp-svg">
+              <defs><path id="stampPath" d="M60,60 m-46,0 a46,46 0 1,1 92,0 a46,46 0 1,1 -92,0"></path></defs>
+              <text><textPath href="#stampPath">MALEK FOR WEBSITE · MW · FASHION COMMERCE · MW · </textPath></text>
+            </svg>
+            <svg viewBox="0 0 60 60" class="hero__stamp-mark" fill="currentColor" aria-hidden="true">
+              <path d="__PATH_W__" /><path d="__PATH_M__" />
+              <path d="__PATH_T1__" /><path d="__PATH_T2__" />
+            </svg>
+          </div>
+
+          <span class="hero__vertical" aria-hidden="true">MW — <em class="rom">MMXXVI</em> — CAIRO</span>
+        </div>
+      </div>
+
+      <div class="hero__ticker" aria-hidden="true">
+        <div class="hero__ticker-track">
+          <span>متاجر أزياء <b>✦</b> تجربة شراء <b>✦</b> لوحة تحكم عربية <b>✦</b> قاعدة بيانات <b>✦</b> دومين خاص <b>✦</b> متوافق موبايل <b>✦</b> طلبات واتساب <b>✦</b></span>
+          <span>متاجر أزياء <b>✦</b> تجربة شراء <b>✦</b> لوحة تحكم عربية <b>✦</b> قاعدة بيانات <b>✦</b> دومين خاص <b>✦</b> متوافق موبايل <b>✦</b> طلبات واتساب <b>✦</b></span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WORK ============ -->
+    <section class="section work" id="work">
+      <div class="wrap">
+        <header class="head">
+          <div class="head__left">
+            <span class="eyebrow reveal"><i class="tick"></i> 01 — المختار</span>
+            <h2 class="h2 reveal" data-delay="1">أعمال<br><em>حقيقية على الإنترنت</em></h2>
+          </div>
+          <p class="lead reveal" data-delay="2">
+            متجرين مفتوحين فعلًا، بيبيعوا، وبيستقبلوا طلبات كل يوم. الصور اللي تحت
+            هي نفس الصور اللي الزوار بيشوفوها على المتاجر دلوقتي — من غير أي ماكيت.
+          </p>
+        </header>
+
+        <!-- Featured: CLOTHINA -->
+        <article class="case reveal">
+          <div class="case__media">
+            <div class="case__browser">
+              <div class="case__chrome" aria-hidden="true">
+                <span class="case__dots"><i></i><i></i><i></i></span>
+                <span class="case__url">clothina-streetwear.vercel.app</span>
+                <span class="case__live"><i></i>LIVE</span>
+              </div>
+              <div class="case__screen">
+                <img class="case__hero" src="../assets/projects/s-cloth-hero.webp" alt="واجهة متجر CLOTHINA — لوك ستريت وير على خلفية استوديو" width="736" height="412" loading="lazy">
+                <div class="case__strip">
+                  <img src="../assets/live/cloth-corset-jacket.webp" alt="CORSET JACKET — 850 ج.م" width="620" height="820" loading="lazy">
+                  <img src="../assets/live/cloth-suffers-hoodie.webp" alt="SUFFERS HOODIE" width="620" height="820" loading="lazy">
+                  <img src="../assets/live/cloth-duo-zip-set.webp" alt="DUO ZIP SET" width="620" height="820" loading="lazy">
+                  <img src="../assets/live/cloth-basic-set.webp" alt="BASIC SET 1" width="620" height="820" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="case__body">
+            <div class="case__row">
+              <span class="case__index"><span class="num">01</span> / 02</span>
+              <span class="case__tags">STREETWEAR · EN · 2026</span>
+            </div>
+            <h3 class="case__title">CLOTHINA</h3>
+            <p class="case__desc">
+              براند ستريت وير في القاهرة. واجهة إنجليزي على مود الإديتوريال، شبكة منتجات
+              واسعة، خصومات، وسلة بتوصيل لكل مصر. تجربة الشراء بتحس إنها جزء من البراند،
+              ومش قالب متجر جاهز.
+            </p>
+            <ul class="case__specs">
+              <li><span>25</span> منتج على المتجر</li>
+              <li><span>RTL + LTR</span> واجهتين</li>
+              <li><span>50%</span> عربون فودافون كاش</li>
+            </ul>
+            <a class="link-arrow" href="https://clothina-streetwear.vercel.app/" target="_blank" rel="noopener noreferrer">
+              <span>زيارة المتجر</span>
+              <svg class="icon"><use href="#i-up-left"></use></svg>
+            </a>
+          </div>
+        </article>
+
+        <!-- Second: AWAM -->
+        <article class="case case--flip reveal">
+          <div class="case__media">
+            <div class="case__browser">
+              <div class="case__chrome" aria-hidden="true">
+                <span class="case__dots"><i></i><i></i><i></i></span>
+                <span class="case__url">awam-dallangat.vercel.app</span>
+                <span class="case__live"><i></i>LIVE</span>
+              </div>
+              <div class="case__screen case__screen--rtl">
+                <div class="case__awam">
+                  <img class="case__awam-shot" src="../assets/live/awam-product.webp" alt="سواريه جوخ شداد — المنتج الحالي على متجر عوام الدلنجات" width="620" height="820" loading="lazy">
+                  <div class="case__awam-ui" aria-hidden="true">
+                    <span class="case__awam-brand">عوام الدلنجات</span>
+                    <span class="case__awam-price"><span class="num">1950</span> ج.م</span>
+                    <span class="case__awam-name">سواريه جوخ شداد</span>
+                  </div>
+                </div>
+                <div class="case__awam-side">
+                  <img src="../assets/projects/s-awam-beige.webp" alt="عباية بشت بيتي بخطوط مطرزة — من متجر عوام الدلنجات" width="560" height="700" loading="lazy">
+                  <img src="../assets/projects/s-awam-eid.webp" alt="عباية سواريه سوداء بتطريز على الأكمام — من متجر عوام الدلنجات" width="560" height="700" loading="lazy">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="case__body">
+            <div class="case__row">
+              <span class="case__index"><span class="num">02</span> / 02</span>
+              <span class="case__tags">عبايات · RTL · 2026</span>
+            </div>
+            <h3 class="case__title">عوام الدلنجات</h3>
+            <p class="case__desc">
+              بوتيك عبايات في البحيرة. متجر عربي بالكامل — أقسام، صفحة منتج بتفاصيل الخامة
+              والمقاسات، وإتمام الطلب على واتساب برسالة جاهزة فيها المقاس واللون.
+            </p>
+            <ul class="case__specs">
+              <li><span>4</span> أقسام منتجات</li>
+              <li><span>عربي كامل</span> واجهة RTL</li>
+              <li><span>واتساب</span> إتمام الطلب</li>
+            </ul>
+            <a class="link-arrow" href="https://awam-dallangat.vercel.app/" target="_blank" rel="noopener noreferrer">
+              <span>زيارة المتجر</span>
+              <svg class="icon"><use href="#i-up-left"></use></svg>
+            </a>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ PRICING ============ -->
+    <section class="section pricing" id="pricing">
+      <div class="wrap">
+        <header class="head head--center">
+          <span class="eyebrow reveal"><i class="tick"></i> 02 — الباقات</span>
+          <h2 class="h2 reveal" data-delay="1">اختار الباقة<br><em>وخلّينا نبدأ</em></h2>
+          <p class="lead reveal" data-delay="2">
+            كل باقة فيها التصميم الكامل، قاعدة بيانات على استضافة سحابية، ودومين خاص
+            بمشروعك. الفرق في عدد المنتجات، عدد التعديلات، وسرعة الاستجابة.
+          </p>
+        </header>
+
+        <div class="plans">
+          <article class="plan reveal" data-plan>
+            <span class="plan__fill" aria-hidden="true"></span>
+            <div class="plan__top">
+              <span class="plan__no">01</span>
+              <span class="plan__kicker">الباقة الأولى</span>
+            </div>
+            <h3 class="plan__name">البداية</h3>
+            <p class="plan__tagline">لأول متجر ليك — الأساسيات بشكل محترم.</p>
+            <div class="plan__price">
+              <span class="plan__amount">700</span>
+              <span class="plan__cur">جنيه مصري</span>
+            </div>
+            <ul class="plan__list">
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b><span class="num">40</span> منتج</b> ترفعهم من لوحة التحكم</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>5 تعديلات</b> في الموقع بعد التسليم</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>خدمة عملاء</b> ومتابعة على واتساب</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>حل أي مشكلة في 48 ساعة</b></span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>قاعدة بيانات</b> + <b>دومين</b></span></li>
+            </ul>
+            <a class="btn btn--line btn--full" data-wa="plan-1" href="https://wa.me/201055247802">
+              <span class="btn__label">اطلب باقة البداية</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+            </a>
+          </article>
+
+          <article class="plan plan--pick reveal" data-delay="1" data-plan>
+            <span class="plan__fill" aria-hidden="true"></span>
+            <div class="plan__top">
+              <span class="plan__no">02</span>
+              <span class="plan__kicker">الموصى بها</span>
+            </div>
+            <h3 class="plan__name">النمو</h3>
+            <p class="plan__tagline">أحسن قيمة مقابل السعر — الأكثر اختيارًا.</p>
+            <div class="plan__price">
+              <span class="plan__amount">1000</span>
+              <span class="plan__cur">جنيه مصري</span>
+            </div>
+            <ul class="plan__list">
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b><span class="num">80</span> منتج</b> (Limit) على المتجر</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b><span class="num">12</span> تعديل</b> في الموقع بعد التسليم</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>خدمة عملاء</b> بأولوية</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>حل المشكلات خلال 24 ساعة</b></span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>قاعدة بيانات</b> + <b>دومين</b></span></li>
+            </ul>
+            <a class="btn btn--paper btn--full" data-wa="plan-2" href="https://wa.me/201055247802">
+              <span class="btn__label">اطلب الباقة الموصى بها</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+            </a>
+          </article>
+
+          <article class="plan reveal" data-delay="2" data-plan>
+            <span class="plan__fill" aria-hidden="true"></span>
+            <div class="plan__top">
+              <span class="plan__no">03</span>
+              <span class="plan__kicker">الباقة الثالثة</span>
+            </div>
+            <h3 class="plan__name">الاحتراف</h3>
+            <p class="plan__tagline">لمتجر كبير ومحتاج سرعة استجابة قصوى.</p>
+            <div class="plan__price">
+              <span class="plan__amount">1300</span>
+              <span class="plan__cur">جنيه مصري</span>
+            </div>
+            <ul class="plan__list">
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b><span class="num">120</span> منتج</b> على المتجر</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b><span class="num">20</span> تعديل</b> في الموقع بعد التسليم</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>خدمة عملاء</b> بأقصى أولوية</span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>حل المشكلات الفنية خلال 12 ساعة</b></span></li>
+              <li><svg class="icon"><use href="#i-check"></use></svg><span><b>قاعدة بيانات</b> + <b>دومين</b></span></li>
+            </ul>
+            <a class="btn btn--line btn--full" data-wa="plan-3" href="https://wa.me/201055247802">
+              <span class="btn__label">اطلب باقة الاحتراف</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+            </a>
+          </article>
+        </div>
+
+        <p class="pricing__foot reveal">
+          الأسعار بالجنيه المصري. مش عارف تختار إيه؟
+          <a data-wa="advice" href="https://wa.me/201055247802">كلّمني وأنا أرشّحلك الأنسب لمشروعك</a>.
+        </p>
+      </div>
+    </section>
+
+    <!-- ============ WHY ============ -->
+    <section class="section why" id="why">
+      <div class="wrap">
+        <header class="head">
+          <div class="head__left">
+            <span class="eyebrow reveal"><i class="tick"></i> 03 — الخدمة</span>
+            <h2 class="h2 reveal" data-delay="1">مش بس متجر<br><em>ده شغل معمول صح</em></h2>
+          </div>
+          <p class="lead reveal" data-delay="2">
+            أنا مالك — ببني المتجر من الأول للآخر بنفسي، فمفيش وسيط بينك وبين اللي
+            بيكتب الكود. أي تعديل أو مشكلة بتوصلني على طول.
+          </p>
+        </header>
+
+        <div class="features">
+          <article class="feature reveal">
+            <span class="feature__no">01</span>
+            <span class="feature__icon"><svg class="icon"><use href="#i-pen"></use></svg></span>
+            <h3>تصميم للأزياء</h3>
+            <p>الصورة هي البطل. شبكة إديتوريال، مساحات واسعة، وتفاصيل بتخلّي المنتج يبان زي ما هو.</p>
+          </article>
+          <article class="feature reveal" data-delay="1">
+            <span class="feature__no">02</span>
+            <span class="feature__icon"><svg class="icon"><use href="#i-mobile"></use></svg></span>
+            <h3>متوافق مع كل شاشة</h3>
+            <p>المتجر بيشتغل زي الفل على الموبايل والتابلت واللابتوب — وأغلب زوارك من الموبايل أصلًا.</p>
+          </article>
+          <article class="feature reveal" data-delay="2">
+            <span class="feature__no">03</span>
+            <span class="feature__icon"><svg class="icon"><use href="#i-bolt"></use></svg></span>
+            <h3>سرعة في التنفيذ</h3>
+            <p>مشروع كامل بيتنفّذ في وقت قصير وبمتابعة يومية منك على واتساب، من غير مفاجآت.</p>
+          </article>
+          <article class="feature reveal" data-delay="3">
+            <span class="feature__no">04</span>
+            <span class="feature__icon"><svg class="icon"><use href="#i-db"></use></svg></span>
+            <h3>قاعدة بيانات ودومين</h3>
+            <p>كل باقة بتيجي بقاعدة بيانات على استضافة سحابية ودومين خاص — المشروع ملكك بالكامل.</p>
+          </article>
+          <article class="feature reveal" data-delay="4">
+            <span class="feature__no">05</span>
+            <span class="feature__icon"><svg class="icon"><use href="#i-store"></use></svg></span>
+            <h3>طلبات على واتساب</h3>
+            <p>العميل بيختار المنتج والمقاس واللون، والطلب بيوصلك على واتساب برسالة مرتّبة جاهزة.</p>
+          </article>
+          <article class="feature reveal" data-delay="5">
+            <span class="feature__no">06</span>
+            <span class="feature__icon"><svg class="icon"><use href="#i-headset"></use></svg></span>
+            <h3>دعم بعد التسليم</h3>
+            <p>خلص المشروع؟ لسه معاك. تعديلات وخدمة عملاء وحل مشاكل بمواعيد واضحة في كل باقة.</p>
+          </article>
+        </div>
+
+        <ol class="steps">
+          <li class="step reveal">
+            <span class="step__no">01</span>
+            <h3>كلّمني</h3>
+            <p>اختار الباقة، ورسالة واتساب جاهزة هتتفتح بالتفاصيل. نتكلم في فكرتك براحتك.</p>
+          </li>
+          <li class="step reveal" data-delay="1">
+            <span class="step__no">02</span>
+            <h3>أصمّم وأبني</h3>
+            <p>بجهّز التصميم وتبدأ تراجعه. تشوف كل حاجة قبل ما تتشغّل، وتعدّل لحد ما تعجبك.</p>
+          </li>
+          <li class="step reveal" data-delay="2">
+            <span class="step__no">03</span>
+            <h3>ننشر ونسلّم</h3>
+            <p>المتجر بيتنشر على الدومين بقاعدة البيانات ولوحة التحكم، وأديك الدعم بعد التسليم.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="section contact" id="contact">
+      <div class="wrap contact__grid">
+        <div class="contact__copy">
+          <span class="eyebrow reveal"><i class="tick"></i> 04 — تواصل</span>
+          <h2 class="h2 reveal" data-delay="1">جاهز يبقى عندك<br><em>متجر شغّال؟</em></h2>
+          <p class="lead reveal" data-delay="2">
+            ابعتلي على واتساب — احكيلي عن مشروعك بجملتين وأنا أرد عليك في أسرع وقت.
+            لو دُست على أي باقة، الرسالة بتوصلني فيها الباقة وتفاصيلها على طول.
+          </p>
+
+          <div class="contact__actions reveal" data-delay="3">
+            <a class="btn btn--paper btn--lg" data-wa="general" href="https://wa.me/201055247802" target="_blank" rel="noopener">
+              <span class="btn__label">كلّمني على واتساب</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+            </a>
+            <a class="btn btn--line btn--lg" href="tel:+201055247802">
+              <span class="btn__label" dir="ltr">+20&nbsp;105&nbsp;524&nbsp;7802</span>
+              <span class="btn__icon"><svg class="icon"><use href="#i-phone"></use></svg></span>
+            </a>
+          </div>
+
+          <ul class="contact__meta reveal" data-delay="4">
+            <li><svg class="icon"><use href="#i-globe"></use></svg> القاهرة، مصر · بشتغل مع عملاء من كل مكان</li>
+            <li><svg class="icon"><use href="#i-bolt"></use></svg> الرد على واتساب في أسرع وقت ممكن</li>
+          </ul>
+        </div>
+
+        <form class="form reveal" data-delay="2" id="contactForm">
+          <span class="form__title">أو ابعتلي تفاصيلك</span>
+          <div class="field">
+            <label for="f-name">اسمك</label>
+            <input id="f-name" name="name" type="text" autocomplete="name" placeholder="اكتب اسمك" required>
+          </div>
+          <div class="field">
+            <label for="f-plan">الباقة المهتم بها</label>
+            <div class="select-wrap">
+              <select id="f-plan" name="plan">
+                <option value="البداية — 700 ج.م">البداية — 700 ج.م</option>
+                <option value="النمو (الموصى بها) — 1000 ج.م">النمو (الموصى بها) — 1000 ج.م</option>
+                <option value="الاحتراف — 1300 ج.م">الاحتراف — 1300 ج.م</option>
+                <option value="لسه محتاج ترشيح">لسه محتاج ترشيح</option>
+              </select>
+              <svg class="icon"><use href="#i-chevron"></use></svg>
+            </div>
+          </div>
+          <div class="field">
+            <label for="f-note">عن مشروعك (اختياري)</label>
+            <textarea id="f-note" name="note" rows="3" placeholder="بتبيع إيه؟ وعندك كام منتج؟"></textarea>
+          </div>
+          <button class="btn btn--paper btn--full" type="submit">
+            <span class="btn__label">ابعت على واتساب</span>
+            <span class="btn__icon"><svg class="icon"><use href="#i-whatsapp"></use></svg></span>
+          </button>
+          <p class="form__note">مفيش تسجيل ولا إيميلات — الرسالة بتتفتح في واتساب جاهزة للإرسال.</p>
+          <p class="form__status" id="formStatus" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer__mark">
+        <svg viewBox="0 0 60 60" fill="currentColor" aria-hidden="true">
+          <path d="__PATH_W__" /><path d="__PATH_M__" />
+          <path d="__PATH_T1__" /><path d="__PATH_T2__" />
+        </svg>
+      </div>
+
+      <div class="footer__top">
+        <div class="footer__brand">
+          <a class="brand brand--footer" href="#top" aria-label="Malek for Website — للأعلى">
+            <span class="brand__mark" aria-hidden="true">
+              <svg viewBox="0 0 60 60" fill="currentColor" class="brand__svg">
+                <path d="__PATH_W__" /><path d="__PATH_M__" />
+                <path d="__PATH_T1__" /><path d="__PATH_T2__" />
+              </svg>
+            </span>
+            <span class="brand__text">
+              <span class="brand__name">MALEK</span>
+              <span class="brand__sub">FOR WEBSITE</span>
+            </span>
+          </a>
+          <p>بصمّم وأبني متاجر إلكترونية لبراندات الأزياء — تصميم إديتوريال، سرعة، ودعم بعد التسليم.</p>
+        </div>
+
+        <div class="footer__col">
+          <h4>الموقع</h4>
+          <ul>
+            <li><a href="#work">المشاريع</a></li>
+            <li><a href="#pricing">الباقات</a></li>
+            <li><a href="#why">الخدمة</a></li>
+            <li><a href="#contact">تواصل</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col">
+          <h4>أعمالي</h4>
+          <ul>
+            <li><a href="https://awam-dallangat.vercel.app/" target="_blank" rel="noopener noreferrer">عوام الدلنجات</a></li>
+            <li><a href="https://clothina-streetwear.vercel.app/" target="_blank" rel="noopener noreferrer">CLOTHINA</a></li>
+          </ul>
+        </div>
+
+        <div class="footer__col footer__col--contact">
+          <h4>كلّمني</h4>
+          <a class="footer__phone" href="tel:+201055247802" dir="ltr">+20&nbsp;105&nbsp;524&nbsp;7802</a>
+          <a class="footer__wa" data-wa="general" href="https://wa.me/201055247802" target="_blank" rel="noopener">واتساب مباشر ←</a>
+          <span class="footer__loc">القاهرة، مصر</span>
+        </div>
+      </div>
+
+      <div class="footer__bottom">
+        <span>© <span data-year>2026</span> Malek for Website — جميع الحقوق محفوظة.</span>
+        <span class="footer__sig">MW · MALEK FOR WEBSITE</span>
+        <a href="#top">للأعلى ↑</a>
+      </div>
+    </div>
+  </footer>
+
+  <a class="wa-float" data-wa="general" href="https://wa.me/201055247802" target="_blank" rel="noopener" aria-label="تواصل على واتساب">
+    <span class="wa-float__pulse" aria-hidden="true"></span>
+    <svg class="icon"><use href="#i-whatsapp"></use></svg>
+    <span class="wa-float__tip">كلّمني على واتساب</span>
+  </a>
+
+  <script src="app.js"></script>
+</body>
+</html>

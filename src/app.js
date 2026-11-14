@@ -1,6 +1,6 @@
 /* ==========================================================================
-   MALEK FOR WEBSITE — interactions
-   Boot animation · scroll reveals · counters · WhatsApp deep links
+   MW — MALEK FOR WEBSITE
+   Loader choreography · reveals · counters · WhatsApp deep links
    ========================================================================== */
 (function () {
   'use strict';
@@ -52,15 +52,16 @@
 
   function openWa(url) {
     var win = window.open(url, '_blank', 'noopener');
-    if (!win) window.location.href = url; // popup blocked → go directly
+    if (!win) window.location.href = url;
   }
 
-  /* Every [data-wa] anchor ships a pre-encoded href (works without JS);
-     here we keep it in sync and add a popup-blocked safety net. */
+  /* render.py already bakes the encoded hrefs into the HTML, so links work
+     without JS. This pass only re-asserts target/rel and keeps the copy above
+     and the markup in agreement if one of them is edited. */
   document.querySelectorAll('[data-wa]').forEach(function (el) {
     el.setAttribute('href', waUrl(messageFor(el.getAttribute('data-wa'))));
     el.setAttribute('target', '_blank');
-    el.setAttribute('rel', 'noopener noreferrer');
+    el.setAttribute('rel', 'noopener');
   });
 
   /* --------------------------------------------------------------- year */
@@ -68,7 +69,9 @@
     el.textContent = String(new Date().getFullYear());
   });
 
-  /* ------------------------------------------------------------- loader */
+  /* ------------------------------------------------------------- loader
+     The mark assembles at 0.12–1.2s, the wordmark at 0.82–1.45s, so the
+     counter is paced to finish just after the last letter lands.        */
   var loader = document.getElementById('loader');
   var fill = document.getElementById('loaderFill');
   var pct = document.getElementById('loaderPct');
@@ -86,41 +89,37 @@
     }
     document.body.classList.remove('is-locked');
     document.documentElement.classList.add('is-ready');
-    startHeroCounters();
+    startCounters();
   }
 
   if (loader && !reduced) {
     document.body.classList.add('is-locked');
-    var progress = 0;
-    var holdUntil = Date.now() + 1500; // let the monogram draw itself
+    var duration = 1750;          // matches the CSS choreography
+    var started = Date.now();
 
     var step = function () {
-      var target = Math.min(100, progress + Math.random() * 16 + 6);
-      progress = Math.min(target, 96);
-      if (fill) fill.style.width = progress + '%';
-      if (pct) pct.textContent = String(Math.floor(progress));
-      if (progress >= 96 && Date.now() >= holdUntil) {
-        progress = 100;
-        if (fill) fill.style.width = '100%';
-        if (pct) pct.textContent = '100';
+      var t = Math.min(1, (Date.now() - started) / duration);
+      // ease-out so the number decelerates into 100
+      var eased = 1 - Math.pow(1 - t, 2.2);
+      var value = Math.round(eased * 100);
+      if (fill) fill.style.width = value + '%';
+      if (pct) pct.textContent = value < 10 ? '0' + value : String(value);
+      if (t >= 1) {
         clearInterval(timer);
-        setTimeout(finishBoot, 320);
+        setTimeout(finishBoot, 260);
       }
     };
-    var timer = setInterval(step, 130);
+    var timer = setInterval(step, 40);
+    step();
 
-    window.addEventListener('load', function () {
-      holdUntil = Math.min(holdUntil, Date.now() + 450);
-    });
-
-    // Hard safety net: never keep a visitor behind the curtain.
-    setTimeout(function () { clearInterval(timer); finishBoot(); }, 5200);
+    // Never keep a visitor behind the curtain.
+    setTimeout(function () { clearInterval(timer); finishBoot(); }, 4600);
   } else {
     finishBoot();
   }
 
-  /* --------------------------------------------------------- hero counters */
-  function startHeroCounters() {
+  /* ----------------------------------------------------------- counters */
+  function startCounters() {
     var nodes = document.querySelectorAll('[data-count]');
     if (!nodes.length) return;
     nodes.forEach(function (node) {
@@ -128,24 +127,22 @@
       var suffix = node.getAttribute('data-suffix') || '';
       if (isNaN(to)) return;
       if (reduced) { node.textContent = to + suffix; return; }
-      var start = performance.now();
-      var dur = 1300;
-      var tick = function (now) {
-        var p = Math.min(1, (now - start) / dur);
+      var t0 = performance.now();
+      (function tick(now) {
+        var p = Math.min(1, (now - t0) / 1200);
         var eased = 1 - Math.pow(1 - p, 3);
         node.textContent = Math.round(to * eased) + suffix;
         if (p < 1) requestAnimationFrame(tick);
-      };
-      requestAnimationFrame(tick);
+      })(t0);
     });
   }
 
-  /* ---------------------------------------------------------- sticky header */
+  /* ------------------------------------------------------ sticky header */
   var header = document.querySelector('.site-header');
   var bar = document.getElementById('scrollBar');
 
   function onScroll() {
-    if (header) header.classList.toggle('is-scrolled', window.scrollY > 20);
+    if (header) header.classList.toggle('is-scrolled', window.scrollY > 18);
     if (bar) {
       var h = document.documentElement.scrollHeight - window.innerHeight;
       var p = h > 0 ? Math.min(1, Math.max(0, window.scrollY / h)) : 0;
@@ -156,7 +153,7 @@
   window.addEventListener('resize', onScroll);
   onScroll();
 
-  /* ------------------------------------------------------------ mobile menu */
+  /* --------------------------------------------------------- mobile menu */
   var toggle = document.querySelector('.nav__toggle');
   var menu = document.getElementById('mobile-menu');
 
@@ -179,14 +176,10 @@
       link.addEventListener('click', function () { setMenu(false); });
     });
   }
-  document.addEventListener('keydown', function (e) {
-    if (e.key === 'Escape') setMenu(false);
-  });
-  window.addEventListener('resize', function () {
-    if (window.innerWidth > 980) setMenu(false);
-  });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setMenu(false); });
+  window.addEventListener('resize', function () { if (window.innerWidth > 980) setMenu(false); });
 
-  /* -------------------------------------------------------- reveal on scroll */
+  /* ----------------------------------------------------------- reveals */
   var reveals = Array.prototype.slice.call(document.querySelectorAll('.reveal'));
   if ('IntersectionObserver' in window && !reduced) {
     var io = new IntersectionObserver(function (entries, obs) {
@@ -210,7 +203,7 @@
     }, 80);
   });
 
-  /* ------------------------------------------------------- active nav link */
+  /* ------------------------------------------------------ active nav link */
   var navLinks = Array.prototype.slice.call(document.querySelectorAll('.nav__links a'));
   var sections = navLinks
     .map(function (l) { return document.querySelector(l.getAttribute('href')); })
@@ -228,22 +221,7 @@
     sections.forEach(function (s) { sio.observe(s); });
   }
 
-  /* --------------------------------------------------- card tilt (pointer) */
-  if (!reduced && window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
-    document.querySelectorAll('[data-plan]').forEach(function (card) {
-      card.addEventListener('pointermove', function (e) {
-        var r = card.getBoundingClientRect();
-        var x = (e.clientX - r.left) / r.width - 0.5;
-        var y = (e.clientY - r.top) / r.height - 0.5;
-        card.style.transform = 'translateY(-8px) rotateX(' + (-y * 3.2).toFixed(2) + 'deg) rotateY(' + (x * 3.6).toFixed(2) + 'deg)';
-      });
-      card.addEventListener('pointerleave', function () {
-        card.style.transform = '';
-      });
-    });
-  }
-
-  /* ------------------------------------------------- enquiry -> WhatsApp */
+  /* ---------------------------------------------------- enquiry → WhatsApp */
   var form = document.getElementById('contactForm');
   var status = document.getElementById('formStatus');
 
