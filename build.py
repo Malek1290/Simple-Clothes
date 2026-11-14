@@ -3,9 +3,9 @@
 
 Run:  python3 build.py
 
-It inlines styles.css, app.js, the three woff2 fonts and the four editorial
-photographs as base64 data URIs. The output works offline — including inside
-sandboxed iframe previews that block all network requests.
+It inlines styles.css, app.js, the woff2 fonts and the project screenshots as
+base64 data URIs. The output works offline — including inside sandboxed iframe
+previews that block all network requests.
 """
 from __future__ import annotations
 
@@ -17,6 +17,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 OUT = ROOT / "index.html"
+
+IMAGE_EXT = r"(?:jpg|jpeg|png|webp|svg)"
 
 
 def data_uri(path: Path) -> str:
@@ -44,9 +46,9 @@ def main() -> None:
         css,
     )
 
-    # Images referenced from HTML: src="../assets/name.jpg"
+    # Images referenced from HTML: src="../assets/..."
     html = re.sub(
-        r"([\"'])\.\./assets/([\w.-]+\.(?:jpg|jpeg|png|webp))\1",
+        rf"([\"'])\.\./assets/([\w./-]+\.{IMAGE_EXT})\1",
         lambda m: f'"{asset_uri("assets/" + m.group(2))}"',
         html,
     )
@@ -60,22 +62,32 @@ def main() -> None:
 
     # A preloaded font is unnecessary once the @font-face src is a data URI.
     html = re.sub(
-        r"\s*<link rel=\"preload\" href=\"data:font/woff2[^\"]*\"[^>]*/>",
+        r"\s*<link rel=\"preload\" href=\"data:font/woff2[^\"]*\"[^>]*?/?>",
         "",
         html,
     )
 
-    html = html.replace(
-        '<link rel="stylesheet" href="styles.css" />',
-        "<style>\n" + css + "\n</style>",
+    html = re.sub(
+        r"<link rel=\"stylesheet\" href=\"styles\.css\"\s*/?>",
+        lambda _m: "<style>\n" + css + "\n</style>",
+        html,
     )
-    html = html.replace(
-        '<script src="app.js"></script>',
-        "<script>\n" + js + "\n</script>",
+    html = re.sub(
+        r"<script src=\"app\.js\"></script>",
+        lambda _m: "<script>\n" + js + "\n</script>",
+        html,
     )
 
-    if "styles.css" in html or "app.js" in html or "../assets/" in html or "../fonts/" in html:
-        raise RuntimeError("Some references were not inlined — check the source paths.")
+    leftovers = [
+        token
+        for token in ("styles.css", "app.js", "../assets/", "../fonts/")
+        if token in html
+    ]
+    if leftovers:
+        raise RuntimeError(
+            "Some references were not inlined — check the source paths: "
+            + ", ".join(leftovers)
+        )
 
     OUT.write_text(html, encoding="utf-8")
     print(f"Built {OUT} ({OUT.stat().st_size / 1024:.0f} KB) — fully self-contained.")
