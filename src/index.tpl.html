@@ -544,7 +544,7 @@
       </div>
     </section>
     <section class="experiment section" id="experiment" aria-labelledby="experimentTitle">
-      <div class="container">
+      <div class="wrap">
         <div class="experiment__intro">
           <p class="eyebrow">MW LAB / تجربة خارج الإطار</p>
           <h2 id="experimentTitle">مش كل كود…<br>بيفضل جوّه حدوده.</h2>
@@ -563,21 +563,8 @@
 
   </main>
     <div class="light-story" id="lightStory" hidden>
-      <div class="light-story__wash" aria-hidden="true"></div>
-      <div class="light-story__ink light-story__ink--left" aria-hidden="true"></div>
-      <div class="light-story__ink light-story__ink--right" aria-hidden="true"></div>
-      <div class="light-story__portal" aria-hidden="true"></div>
-      <div class="light-story__actor" aria-hidden="true">
-        <svg class="stick" viewBox="0 0 140 220" xmlns="http://www.w3.org/2000/svg">
-          <g fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="70" cy="32" r="21" fill="currentColor" stroke="none"/>
-            <path d="M70 59V132"/>
-            <path class="stick__arm" d="M70 77L36 106L18 87"/>
-            <path class="stick__reach" d="M70 77L103 59L124 30"/>
-            <path d="M70 132L43 175L28 207M70 132L94 169L116 204"/>
-          </g>
-        </svg>
-      </div>
+      <canvas id="storyCanvas" class="story-canvas" aria-hidden="true"></canvas>
+      <div class="story-frame" aria-hidden="true"><span>MW / EXPERIMENT 001</span><span>LIGHT VS. DARK</span></div>
       <div class="light-story__caption" id="storyCaption" role="status" aria-live="polite"></div>
       <div class="light-story__controls"><span id="storyChapter">01 / THE ESCAPE</span><button type="button" id="storySkip">تخطّي المشهد ×</button></div>
     </div>
@@ -650,6 +637,7 @@
     <span class="wa-float__tip">كلّمني على واتساب</span>
   </a>
 
+  <script src="../assets/vendor/gsap.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>
