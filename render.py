@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent
 SRC = ROOT / "src"
 TPL = SRC / "index.tpl.html"
 OUT = SRC / "index.html"
-PATHS_JSON = Path("/tmp/trace/paths.json")   # produced by the logo tracer
+PATHS_JSON = ROOT / "assets/brand/paths.json"   # produced by the logo tracer
 
 INK = "#0D0D0D"
 PAPER = "#F7F5F1"
