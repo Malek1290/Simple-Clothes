@@ -47,9 +47,9 @@ def main() -> None:
     css = (SRC / "styles.css").read_text(encoding="utf-8")
     js = (SRC / "app.js").read_text(encoding="utf-8")
 
-    # Vendor GSAP locally and inline it for offline/iframe use.
-    html = html.replace('<script src="../assets/vendor/gsap.min.js"></script>',
-                        '<script>' + '\n'.join(line.rstrip() for line in (ROOT / 'assets/vendor/gsap.min.js').read_text().splitlines()) + '</script>')
+    # Vendor anime.js locally and inline it for offline/iframe use.
+    html = html.replace('<script src="../assets/vendor/anime.umd.min.js"></script>',
+                        '<script>' + '\n'.join(line.rstrip() for line in (ROOT / 'assets/vendor/anime.umd.min.js').read_text().splitlines()) + '</script>')
 
     # Fonts referenced from CSS: url('../fonts/name.woff2')
     css = re.sub(

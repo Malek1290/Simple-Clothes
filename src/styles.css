@@ -1193,7 +1193,7 @@ html:not(.js) .hero-in, html:not(.js) .hero__shot, html:not(.js) .hero__stamp { 
 .code-window__bottom > span { color: var(--stone); font-size: 12px; }
 .experiment__note { margin-top: 16px; font-size: 12px; }
 .code-cursor { opacity: .5; }
-/* Cinematic canvas stage: GSAP owns time and geometry; no CSS scene toggles. */
+/* Cinematic canvas stage: anime.js owns time and geometry; no CSS scene toggles. */
 .light-story[hidden] { display: none; }
 .light-story { position: fixed; inset: 0; z-index: 20000; overflow: hidden; isolation: isolate; color: var(--paper); background: transparent; }
 .story-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }

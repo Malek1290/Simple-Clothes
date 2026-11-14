@@ -187,10 +187,12 @@ The page was imported from the supplied Google Drive version; see `scripts/drive
 
 Start is the only trigger for the visual Python typing and the 44-second black/white stick-figure story. No Python evaluation, external video, or audio. Skip / Escape and background-tab cancellation restore the page; reduced-motion users get a static text narrative. Prices retain ascending RTL/DOM order on all viewports.
 
-### Animation v2 — GSAP + Canvas
-The old CSS scene transitions were removed. `assets/vendor/gsap.min.js` (3.14.2) is vendored and inlined by the build, with no CDN requirement. A GSAP timeline interpolates figure joints, climb/resistance/wave poses, portal light, deterministic particles, ink tendrils and an iris closure. Typing takes 1.8 seconds; the theatre takes approximately 44 seconds. Canvas rendering caps device pixel ratio at 2 and reduces particles on phones. Viewport resizing recalculates geometry without restarting the story.
+### Animation v3 — anime.js + Canvas
+The previous animation engine has been removed. `assets/vendor/anime.umd.min.js` (anime.js 4.2.2, MIT) is vendored and inlined by the build, with no CDN requirement. Its native `createTimeline`, `add`, `call`, `animate`, and cancellation APIs drive code typing, articulated figure poses, particles, border light, page dimming, advancing shadow sheets and the final closure.
 
-Real Chromium checks in `scripts/test-experiment.cjs` cover 320×740, 390×844, 768×1024, 1440×900 and 844×390. Results: `scripts/responsive-results.json`. Tests seek the GSAP timeline to inspect story stages; they are not an FPS/performance benchmark.
+Typing takes 1.8 seconds; the full sequence takes about 47 seconds including typing. The figure is larger than before and visibly climbs above the code border. Broad shadows replace the crossing black ropes. Rendering happens in anime.js `onRender` after object values are updated; responsive layout, opt-in playback, Skip/Escape, replay, focus restoration, hidden-tab cancellation and reduced motion are preserved.
+
+Canvas device pixel ratio is capped at 2 and particle count drops on phones. Real Chromium checks cover 320×740, 390×844, 768×1024, 1440×900 and 844×390. Results: `scripts/responsive-results.json`. Tests seek timeline stages; not an FPS benchmark.
 
 ```sh
 npm install --prefix /tmp/mw-tests playwright-core @sparticuz/chromium html-validate@9 postcss@8

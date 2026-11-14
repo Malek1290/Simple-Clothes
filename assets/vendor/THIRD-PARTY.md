@@ -1,11 +1,9 @@
-# GSAP 3.14.2
+# anime.js 4.2.2
 
-Source package: https://www.npmjs.com/package/gsap/v/3.14.2
-Official repository: https://github.com/greensock/GSAP
-Distributed file: `dist/gsap.min.js` (unmodified, copyright header retained).
+Package: https://www.npmjs.com/package/animejs/v/4.2.2
+Repository: https://github.com/juliangarnier/anime
+Distributed file: `dist/bundles/anime.umd.min.js` (unmodified).
+Copyright (c) 2025 Julian Garnier. Licensed under MIT.
+The complete license is included in `ANIME-LICENSE.md`.
 
-Copyright GreenSock. GSAP is distributed under the Standard GSAP license,
-not the MIT license. Terms: https://gsap.com/standard-license/
-See the accompanying package README for details.
-
-The library is vendored for offline use; no runtime CDN request is made.
+Vendored and inlined by build.py for offline use, without runtime CDN requests.
