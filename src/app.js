@@ -253,7 +253,7 @@
 })();
 
 
-/* MW Lab v2 — GSAP 3.14.2 timeline + resolution-aware Canvas theatre. */
+/* MW Lab v3 — anime.js 4.2.2 timeline + resolution-aware Canvas theatre. */
 (function () {
   'use strict';
   var start = document.getElementById('experimentStart');
@@ -268,12 +268,12 @@
   var main = document.querySelector('main');
   var initial = code.textContent;
   var source = '# MW LAB / 001 — light_vs_dark.py\nfrom imagination import Light, Website\n\nsite = Website(theme="black")\nlight = Light(face=None, price=700)\n\nlight.wake()\nlight.cross_border()\nlight.ask("Why fight affordable prices?")\n\nsite.notice(light)\nsite.pull_back(light)\nlight.say("Until we meet again, visitor.")\nsite.seal()';
-  var timeline, ctx, state, origin, running = false, frozen = [], savedFocus;
+  var timeline, captionAnimation, originalMainStyle, ctx, state, origin, running = false, frozen = [], savedFocus;
   var width = 1, height = 1, reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
   var particles = Array.from({length: 64}, function (_,i) {
     return {angle: i * 2.39996, radius: 0.25 + (i % 11)/14, speed: 0.3+(i%7)/9, size: .7+(i%3)*.65};
   });
-  // Local joint coordinates, blended continuously by GSAP — not a rigid icon.
+  // Local joint coordinates, blended continuously by anime.js — not a rigid icon.
   var poses = {
     sleep: [0,-38, 0,-12, -14,1,-20,19, 14,1,20,19, -9,28,-20,43, 12,29,25,42],
     stand: [0,-72, 0,-34, -17,-18,-27,0, 19,-16,29,1, -12,28,-19,56, 14,28,23,56],
@@ -291,7 +291,7 @@
     if (running && state && !overlay.hidden) draw();
   }
   function portalRect() {
-    var targetW=Math.min(width*.80,760), targetH=Math.min(height*.43,340);
+    var targetW=Math.min(width*.80,680), targetH=Math.min(height*.43,350);
     return {x:origin.x+(width/2-origin.x)*state.expand,
       y:origin.y+(height*.48-origin.y)*state.expand,
       w:origin.w+(targetW-origin.w)*state.expand,
@@ -304,8 +304,11 @@
   }
   function draw() {
     if (!ctx || !state || !origin) return;
+    canvas.style.opacity = state.fade;
+    main.style.transform = 'scale('+state.pageScale+') translateX('+state.pageX+'px)';
+    main.style.filter = 'brightness('+state.brightness+')';
     ctx.clearRect(0,0,width,height);
-    var p=portalRect(), time=timeline ? timeline.time():0;
+    var p=portalRect(), time=timeline ? timeline.currentTime/1000:0;
     ctx.fillStyle='rgba(7,7,7,'+state.dim+')';ctx.fillRect(0,0,width,height);
     // Light leaks from the original code border before it fills the viewport.
     var halo=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,Math.max(width,height)*.7);
@@ -330,7 +333,7 @@
       ctx.beginPath();ctx.arc(x,y,d.size,0,Math.PI*2);ctx.fill();
     });ctx.restore();
     // Figure: independently animated head/shoulder/elbow/wrist/hip/knee/ankle.
-    var unit=Math.min(width/440,height/690,1.25);
+    var unit=Math.min(width/330,height/570,1.8);
     var x=width*state.x,y=height*state.y;
     ctx.save();ctx.translate(x,y);ctx.rotate(state.lean);ctx.scale(unit*state.scale,unit*state.scale);
     ctx.globalAlpha=state.actor;ctx.shadowColor='#fff';ctx.shadowBlur=12*state.glow;
@@ -342,16 +345,18 @@
     line([0,5,state.j12,state.j13,state.j14,state.j15],c,thick);
     line([0,5,state.j16,state.j17,state.j18,state.j19],c,thick);
     ctx.restore();
-    // Black ink tendrils attach to the figure, then retract it into the border.
+    // Site shadows advance as broad tapered sheets, not oversized crossing ropes.
     if (state.ink>0) {
-      ctx.save();ctx.strokeStyle='#080808';ctx.lineCap='round';
+      ctx.save();
       [-1,1].forEach(function(side){
-        var edge=side<0?-40:width+40;
-        var endX=edge+(x-edge)*Math.min(1,state.ink);
-        ctx.lineWidth=Math.max(12,width*.025)*state.ink;
-        ctx.beginPath();ctx.moveTo(edge,height*.28);
-        ctx.bezierCurveTo(width*.5,height*.12,endX-side*width*.15,y+height*.16,endX,y+8);ctx.stroke();
-        ctx.lineWidth=2;ctx.strokeStyle='rgba(247,245,241,.18)';ctx.stroke();ctx.strokeStyle='#080808';
+        var edge=side<0?-30:width+30;
+        var tip=edge+(x-edge)*state.ink;
+        var top=height*.12, bottom=height*.83;
+        ctx.fillStyle='#090909';ctx.beginPath();ctx.moveTo(edge,top);
+        ctx.bezierCurveTo(edge-side*70,height*.26,tip-side*60,y-45,tip,y+6);
+        ctx.bezierCurveTo(tip-side*35,y+65,edge-side*50,bottom,edge,bottom);ctx.closePath();ctx.fill();
+        ctx.strokeStyle='rgba(247,245,241,.13)';ctx.lineWidth=1;
+        ctx.beginPath();ctx.moveTo(edge,top+12);ctx.bezierCurveTo(edge-side*70,height*.26,tip-side*60,y-45,tip,y+6);ctx.stroke();
       });ctx.restore();
     }
     // Iris closes inward like ink over the luminous border, never flashing.
@@ -362,12 +367,17 @@
     }
   }
   function message(text,label) {
+    if (captionAnimation) captionAnimation.cancel();
     caption.textContent=text; chapter.textContent=label;
-    window.gsap.fromTo(caption,{opacity:0,y:12},{opacity:1,y:0,duration:.8,ease:'power2.out',overwrite:true});
+    captionAnimation = window.anime.animate(caption, {
+      opacity: [0,1], duration: 900, ease: 'outCubic'
+    });
   }
   function restore() {
-    if (timeline) { timeline.kill();timeline=null; }
-    if(window.gsap) { window.gsap.killTweensOf(caption);window.gsap.set(main,{clearProps:'transform,filter,transformOrigin'}); }
+    if (timeline) { timeline.cancel();timeline=null; }
+    if(captionAnimation) { captionAnimation.cancel();captionAnimation=null; }
+    if(originalMainStyle === null) main.removeAttribute('style');
+    else if(originalMainStyle !== undefined) main.setAttribute('style', originalMainStyle);
     overlay.hidden=true; overlay.removeAttribute('data-scene'); document.body.classList.remove('story-playing');
     frozen.forEach(function(v){v[0].inert=v[1];});frozen=[];
     code.textContent=initial;caption.textContent='';start.disabled=false;start.removeAttribute('aria-busy');
@@ -384,42 +394,46 @@
     document.body.classList.add('story-playing');
     Array.from(document.body.children).forEach(function(n){if(n!==overlay&&n.tagName!=='SCRIPT'){frozen.push([n,n.inert]);n.inert=true;}});
     skip.focus({preventScroll:true});fit();
-    timeline.eventCallback('onUpdate',draw);
+    code.textContent=source;
+    status.textContent='اكتمل الكود. النور بيتحرّك…';
   }
   start.addEventListener('click',function(){
     if(running)return;
-    if(!window.gsap){status.textContent='تعذّر تحميل مكتبة الحركة. أعد تحميل الصفحة للمحاولة.';return;}
+    if(!window.anime){status.textContent='تعذّر تحميل مكتبة الحركة. أعد تحميل الصفحة للمحاولة.';return;}
     savedFocus=start;
     if(reduced.matches){code.textContent=source;status.textContent='الناس بتحاربني علي اسعاري الرخيصه ليه؟ — النور يحاول الخروج، والموقع يعيده — شكلنا هنتقابل تاني يا زائر';return;}
+    originalMainStyle = main.getAttribute('style');
     running=true;start.disabled=true;start.setAttribute('aria-busy','true');status.textContent='بيكتب…';
-    state=Object.assign({dim:0,expand:0,glow:0,actor:0,x:.5,y:.60,scale:.3,lean:0,ink:0,seal:1,close:0},jointObject(poses.sleep));
+    state=Object.assign({dim:0,expand:0,glow:0,actor:0,x:.5,y:.70,scale:.25,lean:0,ink:0,seal:1,close:0,
+      pageScale:1,pageX:0,brightness:1,fade:1},jointObject(poses.sleep));
+    canvas.style.opacity=1;
     var typing={count:0};
-    timeline=window.gsap.timeline({defaults:{ease:'power2.inOut'},onComplete:restore});
-    timeline.to(typing,{count:source.length,duration:1.8,ease:'none',onUpdate:function(){code.textContent=source.slice(0,Math.floor(typing.count));}},0);
-    timeline.call(launch,[],2.2);
-    timeline.call(function(){message('','01 / AWAKENING');},[],2.2);
-    timeline.to(state,{dim:.75,expand:1,glow:1,duration:4.5},2.2);
-    timeline.to(main,{scale:.975,filter:'brightness(.55)',duration:4,transformOrigin:'50% 90%'},2.2);
-    timeline.to(state,Object.assign({actor:1,scale:1,y:.56,duration:5},jointObject(poses.stand)),5.5);
-    timeline.to(state,Object.assign({lean:.05,duration:2.6},jointObject(poses.look)),10.5);
-    timeline.call(function(){message('الناس بتحاربني علي اسعاري الرخيصه ليه؟','02 / A QUESTION OF PRICE');overlay.dataset.scene='speak';},[],12);
-    timeline.to(state,{y:.552,duration:1.2,repeat:3,yoyo:true,ease:'sine.inOut'},12);
-    timeline.call(function(){message('','03 / CROSSING THE LINE');overlay.dataset.scene='escape';},[],18);
-    timeline.to(state,Object.assign({x:.66,y:.37,lean:.18,scale:1.12,duration:5.8},jointObject(poses.climb)),18);
-    timeline.to(main,{x:-5,rotation:-.25,duration:2,yoyo:true,repeat:1},22);
-    timeline.call(function(){message('','04 / THE DARK NOTICES');overlay.dataset.scene='capture';},[],24);
-    timeline.to(state,{ink:1,dim:.9,duration:3.5},24);
-    timeline.to(state,Object.assign({lean:-.24,x:.60,y:.44,duration:3},jointObject(poses.resist)),26);
-    timeline.to(state,Object.assign({x:.5,y:.57,scale:.75,lean:0,duration:5},jointObject(poses.stand)),29);
-    timeline.to(state,{ink:0,duration:3},32);
-    timeline.call(function(){message('شكلنا هنتقابل تاني يا زائر','05 / UNTIL NEXT TIME');overlay.dataset.scene='farewell';},[],34);
-    timeline.to(state,Object.assign({duration:1.8},jointObject(poses.wave)),34);
-    timeline.to(state,{j10:35,duration:.8,yoyo:true,repeat:3,ease:'sine.inOut'},36);
-    timeline.call(function(){message('','06 / SEALED, NOT FORGOTTEN');overlay.dataset.scene='seal';},[],40);
-    timeline.to(state,{close:1,actor:0,glow:0,duration:4},40);
-    timeline.to(canvas,{opacity:0,duration:2},44);
-    timeline.to(main,{scale:1,x:0,rotation:0,filter:'brightness(1)',duration:2},44);
-    window.gsap.set(canvas,{opacity:1});
+    timeline=window.anime.createTimeline({autoplay:false,defaults:{ease:'inOutSine'},
+      onRender:function(){if(!overlay.hidden)draw();},onComplete:restore});
+    timeline.add(typing,{count:source.length,duration:1800,ease:'linear',onUpdate:function(){code.textContent=source.slice(0,Math.floor(typing.count));}},0);
+    timeline.call(launch,2200);
+    timeline.call(function(){message('','01 / A CRACK IN THE DARK');},2200);
+    timeline.add(state,{dim:.70,expand:1,glow:1,pageScale:.985,brightness:.6,duration:4300},2200);
+    // Anticipation, then a full-body rise and a head turn before speaking.
+    timeline.add(state,Object.assign({actor:1,scale:1,y:.57,duration:4800,ease:'outCubic'},jointObject(poses.stand)),5500);
+    timeline.add(state,Object.assign({lean:.04,duration:2200},jointObject(poses.look)),10300);
+    timeline.call(function(){message('الناس بتحاربني علي اسعاري الرخيصه ليه؟','02 / WHY FIGHT THE LIGHT?');overlay.dataset.scene='speak';},12000);
+    timeline.add(state,{y:.562,duration:1300,alternate:true,loop:3},12500);
+    timeline.call(function(){message('','03 / BEYOND THE BORDER');overlay.dataset.scene='escape';},18000);
+    timeline.add(state,Object.assign({x:.63,y:.30,lean:.12,scale:1.1,duration:6000,ease:'inOutCubic'},jointObject(poses.climb)),18000);
+    timeline.add(state,{pageX:-7,duration:1600,alternate:true,loop:1},22500);
+    timeline.call(function(){message('','04 / THE SITE PUSHES BACK');overlay.dataset.scene='capture';},24000);
+    timeline.add(state,{ink:1,dim:.88,duration:4200,ease:'inOutQuart'},24000);
+    timeline.add(state,Object.assign({lean:-.20,x:.59,y:.40,duration:3200},jointObject(poses.resist)),26500);
+    timeline.add(state,Object.assign({x:.5,y:.57,scale:.8,lean:0,duration:4700},jointObject(poses.stand)),29700);
+    timeline.add(state,{ink:0,duration:2600},32400);
+    timeline.call(function(){message('شكلنا هنتقابل تاني يا زائر','05 / NOT THE LAST GOODBYE');overlay.dataset.scene='farewell';},35000);
+    timeline.add(state,Object.assign({duration:1800},jointObject(poses.wave)),35000);
+    timeline.add(state,{j10:36,duration:850,alternate:true,loop:3},37000);
+    timeline.call(function(){message('','06 / BACK TO THE BEGINNING');overlay.dataset.scene='seal';},41000);
+    timeline.add(state,{close:1,actor:0,glow:0,duration:4300,ease:'inOutCubic'},41000);
+    timeline.add(state,{fade:0,pageScale:1,pageX:0,brightness:1,duration:2000},45300);
+    timeline.play();
   });
   skip.addEventListener('click',restore);
   document.addEventListener('keydown',function(e){if(running&&e.key==='Escape')restore();if(running&&!overlay.hidden&&e.key==='Tab'){e.preventDefault();skip.focus();}});

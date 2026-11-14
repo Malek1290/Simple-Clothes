@@ -119,3 +119,9 @@ which is what a fashion label wants from the person building its store.
 - 1.8-second typing; ~44-second theatre; opt-in only, no flashing.
 - Phone: smaller code font, 44px controls, safe-area-aware subtitles, bounded container, reduced particle count; landscape caption treatment.
 - Browser evidence at five portrait/landscape sizes stored in scripts/responsive-results.json.
+
+## Motion v3 — anime.js revision
+- Replace GSAP entirely with anime.js 4.2.2, locally bundled under MIT.
+- Larger faceless figure, clear climb above the luminous boundary, broad shadow sheets rather than crossing ropes.
+- Fast 1.8-second typing; slow scene, ~47 seconds total including typing. Same brand, Arabic dialogue and opt-in-only interaction.
+- Post-render Canvas updates use native anime.js onRender; five responsive browser cases re-run.

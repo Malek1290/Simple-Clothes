@@ -3,30 +3,30 @@
     "width": 320,
     "height": 740,
     "result": "PASS",
-    "checks": "no overflow, opt-in, GSAP playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
+    "checks": "no overflow, opt-in, anime.js playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
   },
   {
     "width": 390,
     "height": 844,
     "result": "PASS",
-    "checks": "no overflow, opt-in, GSAP playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
+    "checks": "no overflow, opt-in, anime.js playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
   },
   {
     "width": 768,
     "height": 1024,
     "result": "PASS",
-    "checks": "no overflow, opt-in, GSAP playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
+    "checks": "no overflow, opt-in, anime.js playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
   },
   {
     "width": 1440,
     "height": 900,
     "result": "PASS",
-    "checks": "no overflow, opt-in, GSAP playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
+    "checks": "no overflow, opt-in, anime.js playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
   },
   {
     "width": 844,
     "height": 390,
     "result": "PASS",
-    "checks": "no overflow, opt-in, GSAP playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
+    "checks": "no overflow, opt-in, anime.js playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors"
   }
 ]
