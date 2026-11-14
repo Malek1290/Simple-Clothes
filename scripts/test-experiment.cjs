@@ -1,32 +1,54 @@
-// Run with NODE_PATH pointing at installed jsdom, html-validate and postcss.
-const {JSDOM}=require('jsdom');
+// npm install --prefix /tmp/mw-tests playwright-core @sparticuz/chromium html-validate@9 postcss@8
+// Start preview on :8080; NODE_PATH=/tmp/mw-tests/node_modules node scripts/test-experiment.cjs
+const {chromium:pw}=require('playwright-core');
+const chromium=require('@sparticuz/chromium').default;
 const fs=require('fs'),assert=require('node:assert/strict');
 const {HtmlValidate}=require('html-validate');
 const postcss=require('postcss');
 (async()=>{
- const html=fs.readFileSync('index.html','utf8');
- const validation=await new HtmlValidate({'extends':['html-validate:recommended'],rules:{'no-inline-style':'off','long-title':'off','prefer-native-element':'off'}}).validateString(html);
- if(!validation.valid) console.log(validation.results.flatMap(r=>r.messages).map(m=>m.ruleId+': '+m.message).join('\n'));
+ const validation=await new HtmlValidate({extends:['html-validate:recommended'],rules:{'no-inline-style':'off','long-title':'off','prefer-native-element':'off'}}).validateString(fs.readFileSync('index.html','utf8'));
+ assert(validation.valid,JSON.stringify(validation.results.flatMap(r=>r.messages)));
  postcss.parse(fs.readFileSync('src/styles.css','utf8'));
- const dom=new JSDOM(html,{runScripts:'outside-only'}),w=dom.window;
- w.matchMedia=()=>({matches:false});
- let now=0,queue=[],id=0;
- w.setTimeout=(fn,delay=0)=>{queue.push({fn,time:now+delay,id:++id});return id};
- w.clearTimeout=n=>{queue=queue.filter(t=>t.id!==n)};
- function advance(ms){const end=now+ms;while(true){queue.sort((a,b)=>a.time-b.time);if(!queue.length||queue[0].time>end)break;const t=queue.shift();now=t.time;t.fn()}now=end}
- const js=fs.readFileSync('src/app.js','utf8').split('/* MW Lab:')[1];
- w.eval('/* MW Lab:'+js);
- const d=w.document,start=d.getElementById('experimentStart'),overlay=d.getElementById('lightStory');
- assert(overlay.hidden); assert.equal(queue.length,0,'nothing auto-starts');
- start.click();advance(4000);assert(!overlay.hidden);assert(start.disabled);
- advance(8000);assert.equal(overlay.dataset.scene,'speak');assert(d.getElementById('storyCaption').textContent.includes('اسعاري'));
- advance(12000);assert.equal(overlay.dataset.scene,'capture');
- advance(5000);assert.equal(overlay.dataset.scene,'farewell');
- advance(15000);assert(overlay.hidden);assert(!start.disabled);assert(!d.body.classList.contains('story-playing'));assert(!d.querySelector('main').inert);
- start.click();advance(4000);d.getElementById('storySkip').click();assert(overlay.hidden);advance(50000);assert(overlay.hidden);
- start.click();w.document.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));assert(!start.disabled);
- w.matchMedia=()=>({matches:true});start.click();assert(overlay.hidden);assert(!start.disabled);assert.equal(queue.length,0);
- assert.deepEqual(Array.from(d.querySelectorAll('.plan__amount')).map(n=>n.textContent),['700','1000','1300']);
- console.log('PASS: CSS parses; idle, typing, slow scenes, dialogue, reset, replay, skip, Escape, reduced motion and price order. HTML valid:',validation.valid);
- if(!validation.valid)process.exitCode=1;
-})();
+ let browser;
+ const evidence=[];
+ try {
+ for(const size of [{width:320,height:740},{width:390,height:844},{width:768,height:1024},{width:1440,height:900},{width:844,height:390}]){
+  browser=await pw.launch({executablePath:await chromium.executablePath(),args:chromium.args,headless:true});
+  const page=await browser.newPage({viewport:size,deviceScaleFactor:1});const errors=[];console.log('viewport',size);page.setDefaultTimeout(15000);
+  page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('http://127.0.0.1:8080/',{waitUntil:'networkidle'});
+  await page.waitForTimeout(2400);
+  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false,'horizontal overflow '+size.width);
+  assert(await page.locator('#lightStory').isHidden());
+  await page.locator('#experimentStart').scrollIntoViewIfNeeded();
+  await page.screenshot({path:`/tmp/mw-${size.width}-idle.png`});
+  await page.locator('#experimentStart').click();
+  await page.waitForTimeout(2700);
+  assert(await page.locator('#lightStory').isVisible());
+  await page.evaluate(()=>{window.testTimeline=gsap.globalTimeline.getChildren().find(t=>t.vars.onComplete&&t.duration()>40);window.testTimeline.pause();window.testTimeline.time(14);});
+  await page.waitForTimeout(150);
+  assert((await page.locator('#storyCaption').innerText()).includes('اسعاري'));
+  await page.screenshot({path:`/tmp/mw-${size.width}-story.png`});
+  console.log('seek capture'); await page.evaluate(()=>{window.testTimeline.time(28);}); console.log('capture ready');
+  await page.screenshot({path:`/tmp/mw-${size.width}-capture.png`,timeout:15000});console.log('captured');
+  await page.evaluate(()=>{window.testTimeline.time(36);});
+  assert((await page.locator('#storyCaption').innerText()).includes('هنتقابل'));
+  await page.evaluate(()=>{window.testTimeline.time(46);});
+  assert(await page.locator('#lightStory').isHidden());
+  assert.equal(await page.locator('#experimentStart').isDisabled(),false);
+  assert.equal(await page.evaluate(()=>document.querySelector('main').inert),false);
+  await page.locator('#experimentStart').click();await page.waitForTimeout(2400);
+  await page.keyboard.press('Escape');assert(await page.locator('#lightStory').isHidden());
+  await page.locator('#experimentStart').click();await page.waitForTimeout(2400);
+  await page.locator('#storySkip').click();assert(await page.locator('#lightStory').isHidden());
+  await page.emulateMedia({reducedMotion:'reduce'});await page.locator('#experimentStart').click();
+  assert(await page.locator('#lightStory').isHidden());assert((await page.locator('#experimentStatus').innerText()).includes('هنتقابل'));
+  assert.deepEqual(await page.locator('.plan__amount').allTextContents(),['700','1000','1300']);
+  assert.deepEqual(errors,[]);
+  evidence.push({...size,result:'PASS',checks:'no overflow, opt-in, GSAP playback/dialogue/reset, Escape, Skip, replay, reduced motion, price order, no JS errors'});
+  await browser.close();
+ }
+ }finally{if(browser)await browser.close()}
+ fs.writeFileSync('scripts/responsive-results.json',JSON.stringify(evidence,null,2)+'\n');
+ console.log('HTML valid; CSS parses; browser acceptance:',evidence);
+})().catch(e=>{console.error(e);process.exit(1)});

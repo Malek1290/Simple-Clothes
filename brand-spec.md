@@ -112,3 +112,10 @@ which is what a fashion label wants from the person building its store.
 - Fast visual typing (~2s), slow 39-second DOM/SVG sequence; never starts without Start.
 - Text bubbles, not recorded speech. No Python is executed. Escape, Skip, tab-accessible controls and reduced-motion static narrative.
 - Source imported from Drive Simple-Clothes-main; provenance in scripts/drive-import.json. Cloudflare transport scripts removed.
+
+## Motion v2 / responsive refinement
+- Preserve existing monochrome brand; cohesive 14/18/20/24/28px corner hierarchy.
+- GSAP 3.14.2 controls a Canvas renderer, replacing rigid SVG/CSS scene changes. Joint-based poses, traced light portal, drifting light particles, articulated escape and ink restraint.
+- 1.8-second typing; ~44-second theatre; opt-in only, no flashing.
+- Phone: smaller code font, 44px controls, safe-area-aware subtitles, bounded container, reduced particle count; landscape caption treatment.
+- Browser evidence at five portrait/landscape sizes stored in scripts/responsive-results.json.

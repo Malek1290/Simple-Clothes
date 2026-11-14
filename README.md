@@ -185,10 +185,15 @@ npx vercel --prod
 ## MW Lab
 The page was imported from the supplied Google Drive version; see `scripts/drive-import.json`. Edit `src/index.tpl.html`, `src/styles.css`, and `src/app.js`, then run `python3 build.py`. Traced logo paths now live in the repository so builds need no temporary files.
 
-Start is the only trigger for the visual Python typing and the 39-second black/white stick-figure story. No Python evaluation, external video, or audio. Skip / Escape and background-tab cancellation restore the page; reduced-motion users get a static text narrative. Prices retain ascending RTL/DOM order on all viewports.
+Start is the only trigger for the visual Python typing and the 44-second black/white stick-figure story. No Python evaluation, external video, or audio. Skip / Escape and background-tab cancellation restore the page; reduced-motion users get a static text narrative. Prices retain ascending RTL/DOM order on all viewports.
 
-Logic/markup checks (not browser visual QA):
+### Animation v2 — GSAP + Canvas
+The old CSS scene transitions were removed. `assets/vendor/gsap.min.js` (3.14.2) is vendored and inlined by the build, with no CDN requirement. A GSAP timeline interpolates figure joints, climb/resistance/wave poses, portal light, deterministic particles, ink tendrils and an iris closure. Typing takes 1.8 seconds; the theatre takes approximately 44 seconds. Canvas rendering caps device pixel ratio at 2 and reduces particles on phones. Viewport resizing recalculates geometry without restarting the story.
+
+Real Chromium checks in `scripts/test-experiment.cjs` cover 320×740, 390×844, 768×1024, 1440×900 and 844×390. Results: `scripts/responsive-results.json`. Tests seek the GSAP timeline to inspect story stages; they are not an FPS/performance benchmark.
+
 ```sh
-npm install --prefix /tmp/mw-tests jsdom@26 html-validate@9 postcss@8
+npm install --prefix /tmp/mw-tests playwright-core @sparticuz/chromium html-validate@9 postcss@8
+# A Chromium runtime and its system libraries are required.
 NODE_PATH=/tmp/mw-tests/node_modules node scripts/test-experiment.cjs
 ```
